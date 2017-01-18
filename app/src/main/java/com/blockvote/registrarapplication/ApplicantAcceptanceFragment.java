@@ -110,11 +110,11 @@ public class ApplicantAcceptanceFragment extends Fragment {
     }
 
     public void acceptButtonPushed() {
-        buttonPressed("R.string.accept_button_text");
+        buttonPressed("accept");
     }
 
     public void rejectButtonPushed() {
-        buttonPressed("R.string.reject_button_text");
+        buttonPressed("reject");
     }
 
 

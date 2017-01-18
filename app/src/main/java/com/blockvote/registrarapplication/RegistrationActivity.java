@@ -5,11 +5,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 
 public class RegistrationActivity extends AppCompatActivity
         implements VotingApplicantListFragment.OnListEntryClickedListener,
         ApplicantAcceptanceFragment.OnFragmentButtonPressedListener{
+
+    private VoterApplicant voterSelected = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +48,18 @@ public class RegistrationActivity extends AppCompatActivity
 
     @Override
     public void onFragmentButtonPushed(String buttonPressed) {
-        Log.d("Reg", buttonPressed);
+        ConfirmChoiceFragment confirmChoiceFragment =
+                ConfirmChoiceFragment.newInstance(voterSelected.getFirstName(),
+                        voterSelected.getLastName(), buttonPressed);
+        FragmentTransaction transaction =  getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.activity_registration, confirmChoiceFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     @Override
     public void OnListEntryClicked(VoterApplicant voterSelected) {
+        this.voterSelected = voterSelected;
         ApplicantAcceptanceFragment applicantAcceptFrag =
                 ApplicantAcceptanceFragment.newInstance(voterSelected.getFirstName(),
                         voterSelected.getLastName());
