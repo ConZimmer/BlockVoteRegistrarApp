@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">BlockVote registration</string>
+    <string name="accept_button_text">Accept Voter</string>
+    <string name="reject_button_text">Reject Voter</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
