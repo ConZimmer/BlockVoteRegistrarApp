@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
 /**
@@ -17,14 +18,12 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class ApplicantAcceptanceFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_applicant_first_name = "applicant_first_name";
+    private static final String ARG_applicant_last_name = "applicant_last_name";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String applicantFirstName = "";
+    private String applicantLastName = "";
 
     private OnFragmentButtonPressedListener mListener;
 
@@ -36,16 +35,16 @@ public class ApplicantAcceptanceFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param firstName Applicant first name .
+     * @param lastName Applicant last name.
      * @return A new instance of fragment ApplicantAcceptanceFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ApplicantAcceptanceFragment newInstance(String param1, String param2) {
+    public static ApplicantAcceptanceFragment newInstance(String firstName, String lastName) {
         ApplicantAcceptanceFragment fragment = new ApplicantAcceptanceFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_applicant_first_name, firstName);
+        args.putString(ARG_applicant_last_name, lastName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,8 +53,8 @@ public class ApplicantAcceptanceFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            applicantFirstName = getArguments().getString(ARG_applicant_first_name);
+            applicantLastName = getArguments().getString(ARG_applicant_last_name);
         }
     }
 
@@ -80,6 +79,10 @@ public class ApplicantAcceptanceFragment extends Fragment {
                 rejectButtonPushed();
             }
         });
+        TextView firstNameTV = (TextView)view.findViewById(R.id.applicant_first_name);
+        firstNameTV.setText(applicantFirstName);
+        TextView lastNameTV = (TextView)view.findViewById(R.id.applicant_last_name);
+        lastNameTV.setText(applicantLastName);
         return view;
     }
 
@@ -113,6 +116,7 @@ public class ApplicantAcceptanceFragment extends Fragment {
     public void rejectButtonPushed() {
         buttonPressed("R.string.reject_button_text");
     }
+
 
 
     /**

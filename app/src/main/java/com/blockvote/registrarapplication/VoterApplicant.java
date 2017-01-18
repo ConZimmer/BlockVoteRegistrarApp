@@ -1,10 +1,8 @@
 package com.blockvote.registrarapplication;
 
-/**
- * Created by Connor on 1/16/2017.
- */
+import java.io.Serializable;
 
-public class VoterApplicant {
+public class VoterApplicant{
     private String firstName;
     private String lastName;
 
@@ -25,6 +23,5 @@ public class VoterApplicant {
     public String toString(){
         return firstName + " " + lastName;
     }
-
 
 }

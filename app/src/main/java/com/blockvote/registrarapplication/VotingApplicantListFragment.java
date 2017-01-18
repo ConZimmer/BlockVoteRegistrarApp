@@ -21,7 +21,6 @@ public class VotingApplicantListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_applicant_list, container, false);
-        //final ListView listview = (ListView) R.findViewById(R.id.Elections_Listview);
 
 
         final ArrayList<VoterApplicant> list = new ArrayList<VoterApplicant>();

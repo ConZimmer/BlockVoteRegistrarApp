@@ -16,7 +16,9 @@ public class RegistrationActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
         Intent intent = getIntent();
-        String message = intent.getStringExtra(ElectionListFragment.EXTRA_MESSAGE);
+        String ElectionSelected =
+                intent.getStringExtra(ElectionListFragment.ELECTION_SELECTED_KEY);
+
         if (findViewById(R.id.activity_registration) != null) {
 
             // However, if we're being restored from a previous state,
@@ -41,14 +43,6 @@ public class RegistrationActivity extends AppCompatActivity
         TV.setText(message);*/
     }
 
-    /*@Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-        FragmentTransaction transaction =  getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.activity_registration, new ApplicantAcceptanceFragment());
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }*/
-
     @Override
     public void onFragmentButtonPushed(String buttonPressed) {
         Log.d("Reg", buttonPressed);
@@ -56,8 +50,11 @@ public class RegistrationActivity extends AppCompatActivity
 
     @Override
     public void OnListEntryClicked(VoterApplicant voterSelected) {
+        ApplicantAcceptanceFragment applicantAcceptFrag =
+                ApplicantAcceptanceFragment.newInstance(voterSelected.getFirstName(),
+                        voterSelected.getLastName());
         FragmentTransaction transaction =  getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.activity_registration, new ApplicantAcceptanceFragment());
+        transaction.replace(R.id.activity_registration, applicantAcceptFrag);
         transaction.addToBackStack(null);
         transaction.commit();
     }
