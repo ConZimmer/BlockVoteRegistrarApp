@@ -1,7 +1,16 @@
 package com.blockvote.registrarapplication;
 
+import android.accounts.NetworkErrorException;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.widget.TextView;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,16 +27,22 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            // Create a new Fragment to be placed in the activity layout
-            ElectionListFragment electionListFrag = new ElectionListFragment();
+            NetworkInterface networkingInterface = NetworkInterface.retrofit.create(NetworkInterface.class);
+            Call<List<String>> call = networkingInterface.getMessage();
+            call.enqueue(new Callback<List<String>>() {
 
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
-            electionListFrag.setArguments(getIntent().getExtras());
+                @Override
+                public void onResponse(Call<List<String>> call, Response<List<String>> response){
+                    ElectionListFragment electionListFrag =
+                            ElectionListFragment.newInstance(response.body());
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.activity_main, electionListFrag).commit();
+                }
 
-            // Add the fragment to the 'fragment_container' FrameLayout
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.activity_main, electionListFrag).commit();
+                @Override
+                public void onFailure(Call<List<String>> call, Throwable t) {
+                }
+            });
         }
     }
 }
