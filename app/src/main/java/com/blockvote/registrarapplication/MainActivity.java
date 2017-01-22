@@ -10,6 +10,9 @@ import com.auth0.android.lock.Lock;
 import com.auth0.android.lock.LockCallback;
 import com.auth0.android.lock.utils.LockException;
 import com.auth0.android.result.Credentials;
+import com.blockvote.registrarapplication.model.ElectionListModel;
+import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
+import com.blockvote.registrarapplication.network.BlockVoteServerInstance;
 
 import java.util.List;
 
@@ -42,12 +45,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /*Auth0 Stuff
         Auth0 auth0 = new Auth0("f2pQL6jMgGQLDsNlHfhQgsmMVGzMcgmg", "enel500blockvote.auth0.com");
         lock = Lock.newBuilder(auth0, callback)
                 // Add parameters to the Lock Builder
                 .build(this);
 
         startActivity(lock.newIntent(this));
+        */
+
         if (findViewById(R.id.activity_main) != null) {
 
             // However, if we're being restored from a previous state,
@@ -57,12 +64,15 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            NetworkInterface networkingInterface = NetworkInterface.retrofit.create(NetworkInterface.class);
-            Call<List<String>> call = networkingInterface.getElectionList();
-            call.enqueue(new Callback<List<String>>() {
+           // NetworkInterface networkingInterface = NetworkInterface.retrofit.create(NetworkInterface.class);
+            BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
+            BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
+            Call<ElectionListModel> call = apiService.getElectionList();
+
+            call.enqueue(new Callback<ElectionListModel>() {
 
                 @Override
-                public void onResponse(Call<List<String>> call, Response<List<String>> response){
+                public void onResponse(Call<ElectionListModel> call, Response<ElectionListModel> response){
                     if(400 <= response.code()  && response.code() < 600)
                     {
                         Toast toast=Toast.makeText(getApplicationContext(),"Problem connecting to server, code: "
@@ -71,13 +81,13 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     ElectionListFragment electionListFrag =
-                            ElectionListFragment.newInstance(response.body());
+                            ElectionListFragment.newInstance(response.body().getResponse());
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.activity_main, electionListFrag).commit();
                 }
 
                 @Override
-                public void onFailure(Call<List<String>> call, Throwable t) {
+                public void onFailure(Call<ElectionListModel> call, Throwable t) {
                     Toast toast=Toast.makeText(getApplicationContext(),"Failure when getting election list"
                         ,Toast.LENGTH_LONG);
                     toast.show();
