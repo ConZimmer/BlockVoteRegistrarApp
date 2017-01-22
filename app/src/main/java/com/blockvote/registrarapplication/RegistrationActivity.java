@@ -4,13 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class RegistrationActivity extends AppCompatActivity
-        implements VotingApplicantListFragment.OnListEntryClickedListener,
-        ApplicantAcceptanceFragment.OnFragmentButtonPressedListener{
+        implements VotingApplicantListFragment.OnVoterApplicantClickedListener,
+        ApplicantAcceptanceFragment.OnApplicantAcceptanctButtonPressedListener {
 
     private VoterApplicant voterSelected = null;
 
@@ -31,8 +36,31 @@ public class RegistrationActivity extends AppCompatActivity
                 return;
             }
 
+            NetworkInterface networkingInterface = NetworkInterface.retrofit.create(NetworkInterface.class);
+            Call<List<VoterApplicant>> call = networkingInterface.getApplicants(ElectionSelected);
+            call.enqueue(new Callback<List<VoterApplicant>>() {
+
+                 @Override
+                 public void onResponse(Call<List<VoterApplicant>> call, Response<List<VoterApplicant>> response) {
+                     if (400 <= response.code() && response.code() < 600) {
+                         Toast toast = Toast.makeText(getApplicationContext(), "Problem connecting to server, code: "
+                                 + response.code(), Toast.LENGTH_LONG);
+                         toast.show();
+                         return;
+                     }
+                     VotingApplicantListFragment voterAppFrag =
+                             VotingApplicantListFragment.newInstance(response.body());
+                     getSupportFragmentManager().beginTransaction()
+                             .add(R.id.activity_registration, voterAppFrag).commit();
+                 }
+
+                 @Override
+                 public void onFailure(Call<List<VoterApplicant>> call, Throwable t) {
+                 }
+             });
+
             // Create a new Fragment to be placed in the activity layout
-            VotingApplicantListFragment voterAppFrag = new VotingApplicantListFragment();
+           /* VotingApplicantListFragment voterAppFrag = new VotingApplicantListFragment();
 
             // In case this activity was started with special instructions from an
             // Intent, pass the Intent's extras to the fragment as arguments
@@ -40,17 +68,16 @@ public class RegistrationActivity extends AppCompatActivity
 
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.activity_registration, voterAppFrag ).commit();
+                    .add(R.id.activity_registration, voterAppFrag ).commit();*/
         }
         /*TextView TV = (TextView)findViewById(R.id.RegTextView);
         TV.setText(message);*/
     }
 
     @Override
-    public void onFragmentButtonPushed(String buttonPressed) {
+    public void onApplicantAcceptanceButtonPushed(String buttonPressed) {
         ConfirmChoiceFragment confirmChoiceFragment =
-                ConfirmChoiceFragment.newInstance(voterSelected.getFirstName(),
-                        voterSelected.getLastName(), buttonPressed);
+                ConfirmChoiceFragment.newInstance(voterSelected, buttonPressed);
         FragmentTransaction transaction =  getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.activity_registration, confirmChoiceFragment);
         transaction.addToBackStack(null);
@@ -58,11 +85,10 @@ public class RegistrationActivity extends AppCompatActivity
     }
 
     @Override
-    public void OnListEntryClicked(VoterApplicant voterSelected) {
+    public void OnVoterApplicantClicked(VoterApplicant voterSelected) {
         this.voterSelected = voterSelected;
         ApplicantAcceptanceFragment applicantAcceptFrag =
-                ApplicantAcceptanceFragment.newInstance(voterSelected.getFirstName(),
-                        voterSelected.getLastName());
+                ApplicantAcceptanceFragment.newInstance(voterSelected);
         FragmentTransaction transaction =  getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.activity_registration, applicantAcceptFrag);
         transaction.addToBackStack(null);

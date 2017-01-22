@@ -21,13 +21,15 @@ import android.widget.TextView;
 public class ConfirmChoiceFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_applicant_fName = "applicant_LName";
-    private static final String ARG_applicant_lName = "applicant_fName";
+    /*private static final String ARG_applicant_fName = "applicant_LName";
+    private static final String ARG_applicant_lName = "applicant_fName";*/
+    private static final String Arg_voter_applicant = "voter_applicant";
     private static final String ARG_registrar_choice = "registrar_choice";
 
     // TODO: Rename and change types of parameters
-    private String applicantFName;
-    private String applicantLName;
+    /*private String applicantFName;
+    private String applicantLName;*/
+    private VoterApplicant applicant;
     private String registrarChoice;
 
 //    private OnFragmentInteractionListener mListener;
@@ -40,17 +42,17 @@ public class ConfirmChoiceFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param appFirstName the first name of the applicant.
-     * @param appLName the last name of the applicant.
+     * @param applicant  the voter applicant that has been selected.
      * @param registrarChoice the choice made by the registrar.
      * @return A new instance of fragment ConfirmChoiceFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ConfirmChoiceFragment newInstance(String appFirstName, String appLName, String registrarChoice) {
+    public static ConfirmChoiceFragment newInstance(VoterApplicant applicant, String registrarChoice) {
         ConfirmChoiceFragment fragment = new ConfirmChoiceFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_applicant_fName, appFirstName);
-        args.putString(ARG_applicant_lName, appLName);
+        /*args.putString(ARG_applicant_fName, appFirstName);
+        args.putString(ARG_applicant_lName, appLName);*/
+        args.putSerializable(Arg_voter_applicant, applicant);
         args.putString(ARG_registrar_choice, registrarChoice);
         fragment.setArguments(args);
         return fragment;
@@ -60,8 +62,9 @@ public class ConfirmChoiceFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            applicantFName = getArguments().getString(ARG_applicant_fName);
-            applicantLName = getArguments().getString(ARG_applicant_lName);
+            /*applicantFName = getArguments().getString(ARG_applicant_fName);
+            applicantLName = getArguments().getString(ARG_applicant_lName);*/
+            applicant = (VoterApplicant)getArguments().getSerializable(Arg_voter_applicant);
             registrarChoice = getArguments().getString(ARG_registrar_choice);
         }
     }
@@ -73,7 +76,8 @@ public class ConfirmChoiceFragment extends Fragment {
         View rootView =  inflater.inflate(R.layout.fragment_confirm_choice, container, false);
         TextView confirmChoiceTV = (TextView)rootView.findViewById(R.id.confirm_choice_TextView);
         confirmChoiceTV.setText("Are you sure you want to " + registrarChoice
-                + " " + applicantFName + " " + applicantLName);
+                + " " + applicant.getFirstName() + " "
+                + applicant.getLastName());
         return rootView;
     }
 

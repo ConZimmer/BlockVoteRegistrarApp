@@ -1,10 +1,8 @@
 package com.blockvote.registrarapplication;
 
-import android.accounts.NetworkErrorException;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -28,11 +26,18 @@ public class MainActivity extends AppCompatActivity {
             }
 
             NetworkInterface networkingInterface = NetworkInterface.retrofit.create(NetworkInterface.class);
-            Call<List<String>> call = networkingInterface.getMessage();
+            Call<List<String>> call = networkingInterface.getElectionList();
             call.enqueue(new Callback<List<String>>() {
 
                 @Override
                 public void onResponse(Call<List<String>> call, Response<List<String>> response){
+                    if(400 <= response.code()  && response.code() < 600)
+                    {
+                        Toast toast=Toast.makeText(getApplicationContext(),"Problem connecting to server, code: "
+                                + response.code(),Toast.LENGTH_LONG);
+                        toast.show();
+                        return;
+                    }
                     ElectionListFragment electionListFrag =
                             ElectionListFragment.newInstance(response.body());
                     getSupportFragmentManager().beginTransaction()

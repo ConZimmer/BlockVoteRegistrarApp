@@ -2,7 +2,7 @@ package com.blockvote.registrarapplication;
 
 import java.io.Serializable;
 
-public class VoterApplicant{
+public class VoterApplicant implements Serializable{
     private String firstName;
     private String lastName;
 
