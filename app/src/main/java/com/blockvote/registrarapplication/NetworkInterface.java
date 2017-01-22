@@ -16,7 +16,8 @@ import retrofit2.http.POST;
  */
 
 public interface NetworkInterface {
-    @GET("/elecList/")
+   // @GET("/elecList/")
+    @GET("/elections/")
     public Call<List<String>> getElectionList();
 
     @FormUrlEncoded
@@ -25,7 +26,8 @@ public interface NetworkInterface {
 
     //https://blockvotenode2.mybluemix.net/
     public static final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://registartestserver.mybluemix.net/")
+            //.baseUrl("https://registartestserver.mybluemix.net/")
+            .baseUrl("https://blockvotenode2.mybluemix.net/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 }
