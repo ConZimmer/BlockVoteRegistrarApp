@@ -1,10 +1,15 @@
 package com.blockvote.registrarapplication.network;
 
+import com.blockvote.registrarapplication.model.AuthorizeRequest;
+import com.blockvote.registrarapplication.model.AuthorizeResponse;
 import com.blockvote.registrarapplication.model.ElectionListModel;
 import com.blockvote.registrarapplication.model.FullElectionInfoModel;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Headers;
 
 /**
@@ -20,4 +25,7 @@ public interface BlockVoteServerAPI {
     @Headers({"Accept: application/json"})
     @GET("getElectionInfo/")
     Call<FullElectionInfoModel> getElectionInfo();
+
+    @POST("authorizeUser/")
+    Call<AuthorizeResponse> authorizeUser(@Body AuthorizeRequest authorizeRequest);
 }
