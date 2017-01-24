@@ -26,6 +26,7 @@ public interface BlockVoteServerAPI {
     @GET("getElectionInfo/")
     Call<FullElectionInfoModel> getElectionInfo();
 
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
     @POST("authorizeUser/")
     Call<AuthorizeResponse> authorizeUser(@Body AuthorizeRequest authorizeRequest);
 }

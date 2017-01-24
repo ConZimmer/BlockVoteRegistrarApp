@@ -51,7 +51,7 @@ public class RegistrationActivity extends AppCompatActivity {
             String username = editUsername.getText().toString();
 
             EditText editVoter = (EditText) findViewById(R.id.editVoter);
-            String voter = editUsername.getText().toString();
+            String voter = editVoter.getText().toString();
 
             CheckBox checkboxReg = (CheckBox) findViewById(R.id.checkboxReg);
             String reg;
@@ -78,8 +78,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         toast.show();
                         return;
                     }
-                    Toast toast=Toast.makeText(getApplicationContext(),"Voter approved"
-                            ,Toast.LENGTH_LONG);
+                    Toast toast=Toast.makeText(getApplicationContext(), response.body().getResponse() ,Toast.LENGTH_LONG);
                     toast.show();
 
                 }

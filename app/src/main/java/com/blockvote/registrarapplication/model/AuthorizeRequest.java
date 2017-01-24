@@ -1,5 +1,8 @@
 package com.blockvote.registrarapplication.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,16 +12,23 @@ import java.util.Map;
  */
 
 public class AuthorizeRequest {
-    private String username;
 
-    private String voter;
+    @SerializedName("username")
+    @Expose
+    String username;
 
-    private String req;
+    @SerializedName("voter")
+    @Expose
+    String voter;
 
-    public AuthorizeRequest(String inputUsername, String inputVoter, String inputReq){
+    @SerializedName("reg")
+    @Expose
+    private String reg;
+
+    public AuthorizeRequest(String inputUsername, String inputVoter, String inputReg){
         username = inputUsername;
         voter = inputVoter;
-        req = inputReq;
+        reg = inputReg;
     }
 
 }
