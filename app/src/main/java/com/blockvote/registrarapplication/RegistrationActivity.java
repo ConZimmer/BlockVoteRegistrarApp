@@ -2,7 +2,6 @@ package com.blockvote.registrarapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
@@ -11,11 +10,8 @@ import android.widget.CheckBox;
 
 import com.blockvote.registrarapplication.model.AuthorizeRequest;
 import com.blockvote.registrarapplication.model.AuthorizeResponse;
-import com.blockvote.registrarapplication.model.ElectionListModel;
 import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
 import com.blockvote.registrarapplication.network.BlockVoteServerInstance;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,7 +28,7 @@ public class RegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
         Intent intent = getIntent();
         String ElectionSelected =
-                intent.getStringExtra(ElectionListFragment.ELECTION_SELECTED_KEY);
+                intent.getStringExtra(BlockVoteServerInstance.ElectionListFragment.ELECTION_SELECTED_KEY);
 
         if (findViewById(R.id.activity_registration) != null) {
 

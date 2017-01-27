@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.blockvote.registrarapplication.ElectionListFragment">
+    tools:context="com.blockvote.registrarapplication.network.BlockVoteServerInstance$ElectionListFragment">
 
     <!-- TODO: Update blank fragment layout -->
 

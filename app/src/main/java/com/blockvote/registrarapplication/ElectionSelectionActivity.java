@@ -1,16 +1,10 @@
 package com.blockvote.registrarapplication;
 
-import android.content.Intent;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.auth0.android.Auth0;
-import com.auth0.android.lock.AuthenticationCallback;
-import com.auth0.android.lock.Lock;
-import com.auth0.android.lock.LockCallback;
-import com.auth0.android.lock.utils.LockException;
-import com.auth0.android.result.Credentials;
 import com.blockvote.registrarapplication.model.ElectionListModel;
 import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
 import com.blockvote.registrarapplication.network.BlockVoteServerInstance;
@@ -21,36 +15,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
-
-    private Lock lock;
-
-    private LockCallback callback = new AuthenticationCallback() {
-        @Override
-        public void onAuthentication(Credentials credentials) {
-            // Login Success response
-        }
-
-        @Override
-        public void onCanceled() {
-            // Login Cancelled response
-        }
-
-        @Override
-        public void onError(LockException error){
-            // Login Error response
-        }
-    };
+public class ElectionSelectionActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent lockIntent = new Intent(this, LoginActivity.class);
-        startActivity(lockIntent);
 
-        /*
         if (findViewById(R.id.activity_main) != null) {
 
             // However, if we're being restored from a previous state,
@@ -90,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-        */
+
 
     }
 }
