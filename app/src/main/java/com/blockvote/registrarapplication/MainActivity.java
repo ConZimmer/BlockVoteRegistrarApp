@@ -14,6 +14,8 @@ import com.auth0.android.result.Credentials;
 import com.blockvote.registrarapplication.model.ElectionListModel;
 import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
 import com.blockvote.registrarapplication.network.BlockVoteServerInstance;
+import com.blockvote.registrarapplication.qrCode.ReadQRActivity;
+import com.blockvote.registrarapplication.qrCode.GenerateQRActivity;
 
 import java.util.List;
 
@@ -47,7 +49,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent lockIntent = new Intent(this, LoginActivity.class);
+        //Intent lockIntent = new Intent(this, LoginActivity.class);
+        //startActivity(lockIntent);
+
+        //Intent lockIntent = new Intent(this, ReadQRActivity.class);
+        //startActivity(lockIntent);
+
+        Intent lockIntent = new Intent(this, GenerateQRActivity.class);
         startActivity(lockIntent);
 
         /*

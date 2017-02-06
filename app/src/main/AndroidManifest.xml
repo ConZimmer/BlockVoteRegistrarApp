@@ -28,6 +28,8 @@
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".ElectionSelectionActivity" />
+        <activity android:name=".qrCode.ReadQRActivity" />
+        <activity android:name=".qrCode.GenerateQRActivity" />
         <activity
             android:name="com.auth0.android.lock.LockActivity"
             android:label="@string/app_name"
