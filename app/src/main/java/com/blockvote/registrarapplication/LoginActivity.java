@@ -1,8 +1,10 @@
 package com.blockvote.registrarapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.security.keystore.KeyProperties;
 import android.widget.Toast;
 
 import com.auth0.android.Auth0;
@@ -11,6 +13,9 @@ import com.auth0.android.lock.Lock;
 import com.auth0.android.lock.LockCallback;
 import com.auth0.android.lock.utils.LockException;
 import com.auth0.android.result.Credentials;
+
+import android.content.SharedPreferences;
+
 
 
 public class LoginActivity extends Activity {
@@ -38,7 +43,16 @@ public class LoginActivity extends Activity {
         @Override
         public void onAuthentication(Credentials credentials) {
             Toast.makeText(getApplicationContext(), "Log In - Success", Toast.LENGTH_SHORT).show();
-            finish();
+            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("access_token", credentials.getAccessToken());
+            editor.putString("token_type", credentials.getType());
+            editor.putString("id_token", credentials.getIdToken());
+            editor.putString("refresh_token", credentials.getRefreshToken());
+            editor.apply();
+
+            startActivity(new Intent(getApplicationContext(), ElectionSelectionActivity.class));
+
         }
 
         @Override
