@@ -28,13 +28,14 @@ public class ReadQRActivity extends AppCompatActivity {
 
     private EditText editText;
     private String EditTextValue;
+    private IntentIntegrator integrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_qr);
 
-        editText = (EditText)findViewById(R.id.generate_message);
+        editText = (EditText)findViewById(R.id.editText);
         TextView textView = (TextView) this.findViewById(R.id.readQR_blurb);
         textView.setText("Please Verify Persons Identity and enter their 'gov ID' number");
 
@@ -45,8 +46,16 @@ public class ReadQRActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                integrator = new IntentIntegrator(activity);
+
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+                integrator.setPrompt("Scan");
+                integrator.setCameraId(0);
+                integrator.setBeepEnabled(false);
+                integrator.setBarcodeImageEnabled(false);
+
                 if (registerVoter()) {
-                    IntentIntegrator integrator = new IntentIntegrator(activity);
+                    //IntentIntegrator integrator = new IntentIntegrator(activity);
                     integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
                     integrator.setPrompt("Scan");
                     integrator.setCameraId(0);
@@ -90,9 +99,11 @@ public class ReadQRActivity extends AppCompatActivity {
         }
         EditTextValue = govID;
 
+        Log.d("LOG INFO", "GOV ID: " + govID );
+
         BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
         BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
-        Call<RegisterVoterModel> call = apiService.registerVoter("US", "113", "jose");
+        Call<RegisterVoterModel> call = apiService.registerVoter("US", govID, "jose");
 
         call.enqueue(new Callback<RegisterVoterModel>() {
             @Override
@@ -104,6 +115,7 @@ public class ReadQRActivity extends AppCompatActivity {
 
                     Log.d("LOG INFO", "Registered voter... Result: " + serverResponse);
                     Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
+                    integrator.initiateScan();
                 }
                 else
                 {
@@ -125,6 +137,11 @@ public class ReadQRActivity extends AppCompatActivity {
 
 
         return false;
+    }
+
+    private void startQRCodeRead()
+    {
+        integrator.initiateScan();
     }
 
 }

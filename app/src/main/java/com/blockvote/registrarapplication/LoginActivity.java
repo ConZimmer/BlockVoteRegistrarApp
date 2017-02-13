@@ -59,7 +59,7 @@ public class LoginActivity extends Activity {
             editor.apply();
 
             //startActivity(new Intent(getApplicationContext(), ElectionSelectionActivity.class));
-            
+
             //finish();
             startActivity(lockIntent);
 
