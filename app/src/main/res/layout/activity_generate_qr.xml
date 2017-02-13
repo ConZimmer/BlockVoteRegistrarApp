@@ -41,4 +41,14 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/generate_button"
         />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/image_QRCode"
+        android:layout_alignLeft="@+id/generate_message"
+        android:layout_alignStart="@+id/generate_message"
+        android:layout_marginTop="76dp"
+        android:id="@+id/textViewResults" />
 </RelativeLayout>

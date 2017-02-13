@@ -10,18 +10,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.blockvote.registrarapplication.qrCode.ReadQRActivity">
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="75dp"
-        android:id="@+id/readQR_blurb"
-        android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/readQR_button"
-        android:layout_alignStart="@+id/readQR_button" />
-
     <Button
-        android:text="Read QR"
+        android:text="Scan QR"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/readQR_button"
@@ -31,6 +21,29 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="166dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="govID"
+        android:ems="10"
+        android:layout_above="@+id/readQR_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="53dp"
+        android:id="@+id/editText" />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/readQR_blurb"
+        android:layout_above="@+id/editText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="31dp"
+        android:layout_marginStart="31dp"
+        android:layout_marginBottom="72dp" />
 </RelativeLayout>
 
 

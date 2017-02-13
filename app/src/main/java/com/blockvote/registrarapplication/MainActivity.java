@@ -51,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent lockIntent = new Intent(this, LoginActivity.class);
-        startActivity(lockIntent);
-
-        //Intent lockIntent = new Intent(this, ReadQRActivity.class);
+        //Intent lockIntent = new Intent(this, LoginActivity.class);
         //startActivity(lockIntent);
+
+        Intent lockIntent = new Intent(this, ReadQRActivity.class);
+        startActivity(lockIntent);
 
         //Intent lockIntent = new Intent(this, GenerateQRActivity.class);
         //startActivity(lockIntent);

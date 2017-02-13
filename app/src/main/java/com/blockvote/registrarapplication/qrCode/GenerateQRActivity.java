@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -22,6 +23,7 @@ public class GenerateQRActivity extends AppCompatActivity {
     private ImageView imageView;
     private Button button;
     private EditText editText;
+    private TextView textView;
     private String EditTextValue ;
     private Thread thread ;
     private final static int QRcodeWidth = 1000 ;
@@ -38,6 +40,9 @@ public class GenerateQRActivity extends AppCompatActivity {
         imageView = (ImageView)findViewById(R.id.image_QRCode);
         editText = (EditText)findViewById(R.id.generate_message);
         button = (Button)findViewById(R.id.generate_button);
+        textView = (TextView)findViewById(R.id.textViewResults);
+
+        textView.setText(getIntent().getStringExtra("Value"));
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
