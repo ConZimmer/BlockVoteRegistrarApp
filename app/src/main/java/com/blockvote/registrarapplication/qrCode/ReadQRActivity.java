@@ -22,7 +22,7 @@ public class ReadQRActivity extends AppCompatActivity {
         setContentView(R.layout.activity_read_qr);
 
         TextView textView = (TextView) this.findViewById(R.id.readQR_blurb);
-        textView.setText("Press the button to start the QR scan");
+        textView.setText("Please Verify Persons Identity and enter their 'gov ID' number");
 
         Button button = (Button)findViewById(R.id.readQR_button);
 

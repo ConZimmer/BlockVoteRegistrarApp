@@ -3,6 +3,7 @@ package com.blockvote.registrarapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.auth0.android.Auth0;
@@ -11,11 +12,14 @@ import com.auth0.android.lock.Lock;
 import com.auth0.android.lock.LockCallback;
 import com.auth0.android.lock.utils.LockException;
 import com.auth0.android.result.Credentials;
+import com.blockvote.registrarapplication.qrCode.GenerateQRActivity;
+import com.blockvote.registrarapplication.qrCode.ReadQRActivity;
 
 
 public class LoginActivity extends Activity {
 
     private Lock mLock;
+    private Intent lockIntent;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +28,8 @@ public class LoginActivity extends Activity {
                 //Add parameters to the builder
                 .build(this);
         startActivity(mLock.newIntent(this));
+
+        lockIntent = new Intent(this, ReadQRActivity.class);
     }
 
     @Override
@@ -38,7 +44,9 @@ public class LoginActivity extends Activity {
         @Override
         public void onAuthentication(Credentials credentials) {
             Toast.makeText(getApplicationContext(), "Log In - Success", Toast.LENGTH_SHORT).show();
+            Log.d("LOGGING", "GOT HERE1.");
             finish();
+            startActivity(lockIntent);
         }
 
         @Override
