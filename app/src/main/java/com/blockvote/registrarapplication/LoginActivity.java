@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.security.keystore.KeyProperties;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.auth0.android.Auth0;
@@ -13,6 +14,8 @@ import com.auth0.android.lock.Lock;
 import com.auth0.android.lock.LockCallback;
 import com.auth0.android.lock.utils.LockException;
 import com.auth0.android.result.Credentials;
+import com.blockvote.registrarapplication.qrCode.GenerateQRActivity;
+import com.blockvote.registrarapplication.qrCode.ReadQRActivity;
 
 import android.content.SharedPreferences;
 
@@ -21,6 +24,7 @@ import android.content.SharedPreferences;
 public class LoginActivity extends Activity {
 
     private Lock mLock;
+    private Intent lockIntent;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +33,8 @@ public class LoginActivity extends Activity {
                 //Add parameters to the builder
                 .build(this);
         startActivity(mLock.newIntent(this));
+
+        lockIntent = new Intent(this, ReadQRActivity.class);
     }
 
     @Override
@@ -43,6 +49,7 @@ public class LoginActivity extends Activity {
         @Override
         public void onAuthentication(Credentials credentials) {
             Toast.makeText(getApplicationContext(), "Log In - Success", Toast.LENGTH_SHORT).show();
+
             SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("access_token", credentials.getAccessToken());
@@ -51,7 +58,10 @@ public class LoginActivity extends Activity {
             editor.putString("refresh_token", credentials.getRefreshToken());
             editor.apply();
 
-            startActivity(new Intent(getApplicationContext(), ElectionSelectionActivity.class));
+            //startActivity(new Intent(getApplicationContext(), ElectionSelectionActivity.class));
+            
+            //finish();
+            startActivity(lockIntent);
 
         }
 

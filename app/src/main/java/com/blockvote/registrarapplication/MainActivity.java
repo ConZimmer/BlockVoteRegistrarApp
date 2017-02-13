@@ -3,6 +3,7 @@ package com.blockvote.registrarapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.auth0.android.Auth0;
@@ -14,6 +15,8 @@ import com.auth0.android.result.Credentials;
 import com.blockvote.registrarapplication.model.ElectionListModel;
 import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
 import com.blockvote.registrarapplication.network.BlockVoteServerInstance;
+import com.blockvote.registrarapplication.qrCode.ReadQRActivity;
+import com.blockvote.registrarapplication.qrCode.GenerateQRActivity;
 
 import java.util.List;
 
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onAuthentication(Credentials credentials) {
             // Login Success response
+            Log.d("LOGGING", "GOT HERE2.");
         }
 
         @Override
@@ -47,8 +51,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent lockIntent = new Intent(this, LoginActivity.class);
+        //Intent lockIntent = new Intent(this, LoginActivity.class);
+        //startActivity(lockIntent);
+
+        Intent lockIntent = new Intent(this, ReadQRActivity.class);
         startActivity(lockIntent);
+
+        //Intent lockIntent = new Intent(this, GenerateQRActivity.class);
+        //startActivity(lockIntent);
 
         /*
         if (findViewById(R.id.activity_main) != null) {
