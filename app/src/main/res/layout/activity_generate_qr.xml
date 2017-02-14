@@ -11,29 +11,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.blockvote.registrarapplication.qrCode.GenerateQRActivity">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:hint="Enter message here"
-        android:ems="10"
-        android:layout_marginTop="29dp"
-        android:id="@+id/generate_message"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:text="Generate QR Code"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="22dp"
-        android:id="@+id/generate_button"
-        android:layout_below="@+id/generate_message"
-        android:layout_alignLeft="@+id/generate_message"
-        android:layout_alignStart="@+id/generate_message"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp" />
-
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,13 +19,4 @@
         android:layout_below="@+id/generate_button"
         />
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/image_QRCode"
-        android:layout_alignLeft="@+id/generate_message"
-        android:layout_alignStart="@+id/generate_message"
-        android:layout_marginTop="76dp"
-        android:id="@+id/textViewResults" />
 </RelativeLayout>

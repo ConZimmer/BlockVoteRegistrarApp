@@ -15,7 +15,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import android.util.Base64;
+import org.spongycastle.util.encoders.Base64;
 import com.google.gson.Gson;
 import android.content.SharedPreferences;
 
@@ -29,11 +29,6 @@ public class GenerateQRActivity extends AppCompatActivity {
 
     private final String LOG_TAG = GenerateQRActivity.class.getSimpleName();
     private ImageView imageView;
-    private Button button;
-    private EditText editText;
-    private TextView textView;
-    private String EditTextValue ;
-    private Thread thread ;
     private final static int QRcodeWidth = 1000 ;
     private Bitmap bitmap ;
     private String blindedToken;
@@ -51,14 +46,10 @@ public class GenerateQRActivity extends AppCompatActivity {
         generateQRActivity = this;
 
         imageView = (ImageView)findViewById(R.id.image_QRCode);
-        editText = (EditText)findViewById(R.id.generate_message);
-        button = (Button)findViewById(R.id.generate_button);
-        textView = (TextView)findViewById(R.id.textViewResults);
 
-        textView.setText(getIntent().getStringExtra("Value"));
         blindedToken = getIntent().getStringExtra("Value");
 
-        tokenRequest = new TokenRequest(Base64.decode(blindedToken, Base64.DEFAULT));
+        tokenRequest = new TokenRequest(Base64.decode(blindedToken));
 
         dataStore = getPreferences(MODE_PRIVATE);
 
@@ -71,10 +62,10 @@ public class GenerateQRActivity extends AppCompatActivity {
         String privateKeyModulusS="AKBDi814o+/Ujo8bF1qjMnyotruZHLv5FWl/xYYFpKLgU4jmeXxhJKY36kmJFK+Kxt6anqmmVBKVZityfp+2lUzojYEJJ9Jzv4qQQQ4BcHijlrrBSvvWZ6KOVB30n2Lgxj99g6B1Eopyq4h+6TC3Sr/DBIkZ0tAH5a3+RG3Q8OEcYGpCQu7v4MIOgF+bFikeu6gk0Mob71TlPGauAIFpc4q3UVBjhbEIyc6vv76Z+RtNd3FZZzsLphzrJB4s6b6TwKpUsIWJ7dXBpkCSVv/sDtB4PeOrzHTH5UHGYkTLbF4o1ie23mbjhIWcSJryJrS+3VMaNuB+waImz/nlJEh/qy0=";
         String privateKeyExponentS="GsCDuPoDJZDd9invyU+2KQRxslmB6CfRSPHM600MWSrojtDoJRjDKSLqzzkcdJwOC9EUHJ4Y6Rw6uJRtaiQsgnDMVCaO2Oy847imP1wCpgSqr8R9y5GT7ZjkFjcEFxmNxkHho7p/LJCtLQUAUIM8LUv0uR0QKW00DAoGaq1m1DCog+PzxRhsJvx6zx6yw7+xwyKd1udXErACRVyvplJ7nFvcfBSC0fp4V3kf1OxUbLAxPVYxiD2LXq6ND3GQY0kT+WueHd5AKSBXv3a21KRXLrhUn22EYsm3oY6pAD/6WiwXdmMpdqgA8NeLOD0O8qbpZogM8VRwuKV4fZZ1fpLeCQ==";
 
-        BigInteger publicKeyModulus = new BigInteger(Base64.decode(publicKeyModulusS, Base64.DEFAULT));
-        BigInteger publicKeyExponent = new BigInteger(Base64.decode(publicKeyExponentS, Base64.DEFAULT));
-        BigInteger privateKeyModulus = new BigInteger(Base64.decode(privateKeyModulusS, Base64.DEFAULT));
-        BigInteger privateKeyExponent = new BigInteger(Base64.decode(privateKeyExponentS, Base64.DEFAULT));
+        BigInteger publicKeyModulus = new BigInteger(Base64.decode(publicKeyModulusS));
+        BigInteger publicKeyExponent = new BigInteger(Base64.decode(publicKeyExponentS));
+        BigInteger privateKeyModulus = new BigInteger(Base64.decode(privateKeyModulusS));
+        BigInteger privateKeyExponent = new BigInteger(Base64.decode(privateKeyExponentS));
 
 
         Registrar registrarInput = new Registrar(publicKeyModulus, publicKeyExponent, privateKeyModulus, privateKeyExponent);
@@ -90,27 +81,18 @@ public class GenerateQRActivity extends AppCompatActivity {
 
         byte[] temp = registrar.sign(tokenRequest);
 
-        signedToken = Base64.encodeToString(temp, Base64.DEFAULT);
+        signedToken = Base64.toBase64String(temp);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        try {
+            //TODO: Do this processing using AsyncTask
+            bitmap = TextToImageEncode(signedToken);
 
-                ToastWrapper.initiateToast(generateQRActivity,"Generating QR code...");
-                EditTextValue = editText.getText().toString();
+            imageView.setImageBitmap(bitmap);
 
-                try {
-                    //TODO: Do this processing using AsyncTask
-                    bitmap = TextToImageEncode(signedToken);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
 
-                    imageView.setImageBitmap(bitmap);
-
-                } catch (WriterException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
     }
 
     Bitmap TextToImageEncode(String Value) throws WriterException {
