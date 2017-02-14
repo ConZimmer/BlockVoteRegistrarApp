@@ -10,17 +10,14 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.blockvote.registrarapplication.qrCode.ReadQRActivity">
 
-    <Button
-        android:text="Scan QR"
+    <TextView
+        android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/readQR_button"
-        android:layout_marginLeft="105dp"
-        android:layout_marginStart="105dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="166dp" />
+        android:id="@+id/readQR_blurb"
+        android:layout_marginLeft="31dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignEnd="@+id/readQR_button" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -28,22 +25,29 @@
         android:inputType="textPersonName"
         android:text="govID"
         android:ems="10"
-        android:layout_above="@+id/readQR_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="53dp"
-        android:id="@+id/editText" />
+        android:id="@+id/editText"
+        android:layout_below="@+id/readQR_blurb"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="11dp" />
 
-    <TextView
-        android:text="TextView"
+    <Button
+        android:text="Scan QR"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/readQR_blurb"
-        android:layout_above="@+id/editText"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="31dp"
-        android:layout_marginStart="31dp"
-        android:layout_marginBottom="72dp" />
+        android:id="@+id/readQR_button"
+        android:layout_marginLeft="105dp"
+        android:layout_below="@+id/editText"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="Clear Data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/clear_button"
+        android:layout_marginLeft="105dp"
+        android:layout_below="@+id/editText"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>
 
 

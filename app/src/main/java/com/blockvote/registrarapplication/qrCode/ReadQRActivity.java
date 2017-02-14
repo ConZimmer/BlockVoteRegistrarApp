@@ -2,9 +2,13 @@ package com.blockvote.registrarapplication.qrCode;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,10 +43,10 @@ public class ReadQRActivity extends AppCompatActivity {
         TextView textView = (TextView) this.findViewById(R.id.readQR_blurb);
         textView.setText("Please Verify Persons Identity and enter their 'gov ID' number");
 
-        Button button = (Button)findViewById(R.id.readQR_button);
+        Button readQRButton = (Button)findViewById(R.id.readQR_button);
 
         final Activity activity = this;
-        button.setOnClickListener(new View.OnClickListener() {
+        readQRButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -67,6 +71,19 @@ public class ReadQRActivity extends AppCompatActivity {
                 {
 
                 }
+            }
+        });
+        Button clearButton = (Button)findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //clear the SharedPreferences data
+                SharedPreferences dataStore = getPreferences(MODE_PRIVATE);
+                SharedPreferences.Editor editor = dataStore.edit();
+                editor.remove("access_token");
+                editor.commit();
+
+                Log.d("MainActivity", "Cleared");
             }
         });
     }
