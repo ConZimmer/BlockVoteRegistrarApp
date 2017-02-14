@@ -120,7 +120,7 @@ public class ReadQRActivity extends AppCompatActivity {
 
         BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
         BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
-        Call<RegisterVoterModel> call = apiService.registerVoter("US", govID, "dave");
+        Call<RegisterVoterModel> call = apiService.registerVoter("US", govID, "david");
 
         call.enqueue(new Callback<RegisterVoterModel>() {
             @Override

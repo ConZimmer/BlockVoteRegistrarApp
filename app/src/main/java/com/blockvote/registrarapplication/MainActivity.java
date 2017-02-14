@@ -23,10 +23,6 @@ public class MainActivity extends AppCompatActivity {
             Intent lockIntent = new Intent(this, LoginActivity.class);
             startActivity(lockIntent);
         }
-
-        Intent lockIntent = new Intent(this, ReadQRActivity.class);
-        startActivity(lockIntent);
-
-
+        
     }
 }
