@@ -62,7 +62,7 @@ public class LoginActivity extends Activity {
 
             AuthenticationAPIClient client = new AuthenticationAPIClient(auth0);
 
-            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = getSharedPreferences("RegistrarData", Context.MODE_PRIVATE);
             final SharedPreferences.Editor editor = sharedPref.edit();
 
             client.tokenInfo(credentials.getIdToken())
@@ -80,6 +80,8 @@ public class LoginActivity extends Activity {
                             String json = gson.toJson(registrarInput);
                             editor.putString("registrar", json);
                             editor.commit();
+
+                            startActivity(lockIntent);
                         }
 
                         @Override
@@ -93,10 +95,7 @@ public class LoginActivity extends Activity {
             editor.putString("refresh_token", credentials.getRefreshToken());
             editor.apply();
 
-            //startActivity(new Intent(getApplicationContext(), ElectionSelectionActivity.class));
-
-            //finish();
-            startActivity(lockIntent);
+            //startActivity(lockIntent);
 
         }
 

@@ -31,7 +31,7 @@ public class GenerateQRActivity extends AppCompatActivity {
     private ImageView imageView;
     private final static int QRcodeWidth = 1000 ;
     private Bitmap bitmap ;
-    private String blindedToken;
+    private String blindedTokenString;
     private String signedToken;
     private TokenRequest tokenRequest;
     private byte[] signature;
@@ -47,11 +47,11 @@ public class GenerateQRActivity extends AppCompatActivity {
 
         imageView = (ImageView)findViewById(R.id.image_QRCode);
 
-        blindedToken = getIntent().getStringExtra("Value");
+        blindedTokenString = getIntent().getStringExtra("ScannedQRCodeBlindedTokenString");
 
-        tokenRequest = new TokenRequest(Base64.decode(blindedToken));
+        tokenRequest = new TokenRequest(Base64.decode(blindedTokenString));
 
-        dataStore = getPreferences(MODE_PRIVATE);
+        dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
 
         Gson gson = new Gson();
 

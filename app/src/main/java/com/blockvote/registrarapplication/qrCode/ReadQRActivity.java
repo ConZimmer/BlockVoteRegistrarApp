@@ -78,7 +78,7 @@ public class ReadQRActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //clear the SharedPreferences data
-                SharedPreferences dataStore = getPreferences(MODE_PRIVATE);
+                SharedPreferences dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
                 SharedPreferences.Editor editor = dataStore.edit();
                 editor.remove("access_token");
                 editor.commit();
@@ -97,9 +97,9 @@ public class ReadQRActivity extends AppCompatActivity {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
                 Log.d("MainActivity", "Scanned");
-                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 Intent lockIntent = new Intent(this, GenerateQRActivity.class);
-                lockIntent.putExtra("Value", result.getContents());
+                lockIntent.putExtra("ScannedQRCodeBlindedTokenString", result.getContents());
                 startActivity(lockIntent);
             }
         } else {
