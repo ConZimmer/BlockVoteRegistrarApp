@@ -12,7 +12,7 @@
         android:pathPrefix="/android/YOUR_APP_PACKAGE/callback"
         android:scheme="https" />
 
-    <activity android:name="com.auth0.android.lock.provider.WebViewActivity" />
+    <!-- <activity android:name="com.auth0.android.lock.provider.WebViewActivity" /> -->
 
     <application
         android:allowBackup="true"

@@ -16,7 +16,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/image_QRCode"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/generate_button"
         />
 
 </RelativeLayout>
