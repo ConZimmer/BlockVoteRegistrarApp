@@ -58,7 +58,8 @@ public class ReadQRActivity extends AppCompatActivity {
                 integrator.setBeepEnabled(false);
                 integrator.setBarcodeImageEnabled(false);
 
-                if (registerVoter()) {
+                //TODO uncomment: if (registerVoter()) {
+                if(true){
                     //IntentIntegrator integrator = new IntentIntegrator(activity);
                     integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
                     integrator.setPrompt("Scan");

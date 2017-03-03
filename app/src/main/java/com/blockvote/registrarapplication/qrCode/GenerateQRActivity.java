@@ -49,21 +49,30 @@ public class GenerateQRActivity extends AppCompatActivity {
 
         blindedTokenString = getIntent().getStringExtra("ScannedQRCodeBlindedTokenString");
 
-        tokenRequest = new TokenRequest(Base64.decode(blindedTokenString));
+        try
+        {
+            tokenRequest = new TokenRequest(Base64.decode(blindedTokenString));
 
-        dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
+            dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
 
-        Gson gson = new Gson();
+            Gson gson = new Gson();
 
-        String json = dataStore.getString("registrar", "");
-        if(json==null){
-            Log.e("ERROR", "ERROR json is null");
+            String json = dataStore.getString("registrar", "");
+            if(json==null){
+                Log.e("ERROR", "ERROR json is null");
+            }
+            Registrar registrar = gson.fromJson(json, Registrar.class);
+
+            byte[] temp = registrar.sign(tokenRequest);
+
+            signedToken = Base64.toBase64String(temp);
         }
-        Registrar registrar = gson.fromJson(json, Registrar.class);
+        catch(Exception ex)
+        {
+            Log.e("ERROR", "Error reading QR code or signing token");
+        }
 
-        byte[] temp = registrar.sign(tokenRequest);
 
-        signedToken = Base64.toBase64String(temp);
 
         try {
             //TODO: Do this processing using AsyncTask
@@ -90,6 +99,11 @@ public class GenerateQRActivity extends AppCompatActivity {
 
             return null;
         }
+        catch (Exception ex) {
+            Log.e("ERROR", "Catching exception when attempting to create QR code");
+            return null;
+        }
+
         int bitMatrixWidth = bitMatrix.getWidth();
 
         int bitMatrixHeight = bitMatrix.getHeight();
