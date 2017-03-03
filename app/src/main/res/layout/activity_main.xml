@@ -10,9 +10,11 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.blockvote.registrarapplication.MainActivity">
 
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:id="@+id/listView" />
+    <fragment android:name="com.blockvote.registrarapplication.MyProgressBar"
+        android:id="@+id/progressBarMain"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_alignParentBottom="true"
+        tools:layout="@layout/progress_bar" />
+
 </RelativeLayout>
