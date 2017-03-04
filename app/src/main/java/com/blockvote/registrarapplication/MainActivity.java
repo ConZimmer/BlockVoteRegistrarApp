@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
         dataStore = getPreferences(MODE_PRIVATE);
         if (!dataStore.contains("access_token")){
             //Need to login
-            Intent lockIntent = new Intent(this, LoginActivity.class);
-            startActivity(lockIntent);
+            //Intent lockIntent = new Intent(this, LoginActivity.class);
+            //startActivity(lockIntent);
         }
         
     }
