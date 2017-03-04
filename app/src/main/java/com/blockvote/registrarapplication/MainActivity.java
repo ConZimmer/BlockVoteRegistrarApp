@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Log.d("MainActivity", "Back Button was pressed");
+
         new AlertDialog.Builder(this)
                 .setMessage("Are you sure you want to exit?")
                 .setCancelable(false)
@@ -92,7 +93,14 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this.finish();
                     }
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Hide the status bar.
+                        View decorView = getWindow().getDecorView();
+                        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+                        decorView.setSystemUiVisibility(uiOptions);
+                    }
+                })
                 .show();
     }
 
