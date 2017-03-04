@@ -22,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ActionBar myActionBar = (ActionBar) getSupportActionBar();
-        myActionBar.setTitle("Testing");
+        //ActionBar myActionBar = (ActionBar) getSupportActionBar();
+        //myActionBar.setTitle("Testing");
 
         View theView = (View) findViewById(R.id.progressBarMain);
         ProgressBar pb = (ProgressBar) theView.findViewById(R.id.progressBar);

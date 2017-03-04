@@ -5,4 +5,5 @@
     <color name="colorAccent">#ff4081</color>
     <color name="QRDarkColor">#0D1522</color>
     <color name="QRWhite">#f7f3f3</color>
+    <color name="colorProgressBackground">#d7d8ea</color>
 </resources>
