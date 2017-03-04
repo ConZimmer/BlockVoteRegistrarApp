@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         ProgressBar pb = (ProgressBar) theView.findViewById(R.id.progressBar);
 
         pb.setProgress(80);
-
+        pb.setScaleY(2f);
 
 
         dataStore = getPreferences(MODE_PRIVATE);
