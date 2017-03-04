@@ -1,5 +1,6 @@
 package com.blockvote.registrarapplication;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,20 +12,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TabHost;
 
 import com.blockvote.registrarapplication.qrCode.ReadQRActivity;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences dataStore;
     private int progress = 0;
 
+    private Intent readQRIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        readQRIntent = new Intent(this, ReadQRActivity.class);
 
         // Hide the status bar.
         View decorView = getWindow().getDecorView();
@@ -77,6 +85,15 @@ public class MainActivity extends AppCompatActivity {
             //Intent lockIntent = new Intent(this, LoginActivity.class);
             //startActivity(lockIntent);
         }
+
+
+        ImageButton addVoter = (ImageButton)findViewById(R.id.imageButtonAddVoter);
+        addVoter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(readQRIntent);
+            }
+        });
         
     }
 

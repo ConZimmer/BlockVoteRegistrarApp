@@ -47,13 +47,13 @@
                     android:orientation="vertical">
 
                     <ImageButton
+                        android:id="@+id/imageButtonAddVoter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@color/colorPrimary"
                         android:layout_marginTop="@dimen/activity_vertical_margin"
                         android:layout_gravity="center"
                         app:srcCompat="@drawable/add_user"
-                        android:id="@+id/imageButton"
                         style="@style/Widget.AppCompat.ImageButton"
                         android:visibility="visible" />
 
