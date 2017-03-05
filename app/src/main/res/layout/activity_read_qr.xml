@@ -48,7 +48,7 @@
     <fragment android:name="com.blockvote.registrarapplication.MyProgressBar"
         android:id="@+id/progressBarEnterID"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="200dp"
         android:layout_alignParentBottom="true"
         tools:layout="@layout/progress_bar" />
 
