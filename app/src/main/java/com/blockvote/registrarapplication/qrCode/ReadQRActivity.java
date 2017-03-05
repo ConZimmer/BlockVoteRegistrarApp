@@ -1,6 +1,7 @@
 package com.blockvote.registrarapplication.qrCode;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -43,7 +44,8 @@ public class ReadQRActivity extends AppCompatActivity {
         TextView textView = (TextView) this.findViewById(R.id.readQR_blurb);
         textView.setText("Please Verify Persons Identity and enter their 'gov ID' number");
 
-        Button readQRButton = (Button)findViewById(R.id.readQR_button);
+        View progressMenu = findViewById(R.id.progressBarEnterID);
+        Button readQRButton = (Button)progressMenu.findViewById(R.id.button_Continue);
 
         final Activity activity = this;
         readQRButton.setOnClickListener(new View.OnClickListener() {
@@ -60,7 +62,6 @@ public class ReadQRActivity extends AppCompatActivity {
 
                 //TODO uncomment: if (registerVoter()) {
                 if(true){
-                    //IntentIntegrator integrator = new IntentIntegrator(activity);
                     integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
                     integrator.setPrompt("Scan");
                     integrator.setCameraId(0);
@@ -74,6 +75,8 @@ public class ReadQRActivity extends AppCompatActivity {
                 }
             }
         });
+
+        /* TODO move to main menu action bar
         Button clearButton = (Button)findViewById(R.id.clear_button);
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +90,7 @@ public class ReadQRActivity extends AppCompatActivity {
                 Log.d("MainActivity", "Cleared");
             }
         });
+        */
     }
 
     @Override
