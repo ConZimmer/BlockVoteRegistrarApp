@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.zxing.BarcodeFormat;
@@ -77,7 +78,7 @@ public class GenerateQRActivity extends AppCompatActivity {
         {
             Log.e("ERROR", "Error reading QR code or signing token");
         }
-        
+
         new QRGenerator(rootView).execute(signedToken);
 /*
         try {
@@ -93,13 +94,16 @@ public class GenerateQRActivity extends AppCompatActivity {
     }
 
 
-    public class QRGenerator extends AsyncTask<String, Void, Bitmap> {
+    public class QRGenerator extends AsyncTask<String, Integer, Bitmap> {
         private final String LOG_TAG= "QRGenerator";
         private View rootView;
+        private ProgressBar pb;
 
         public QRGenerator(View rootView){
             this.rootView=rootView;
             Log.e(LOG_TAG, "QR generation started... " );
+            View progressBarView = (View) findViewById(R.id.progressBarShowQR);
+            pb = (ProgressBar) progressBarView.findViewById(R.id.progressBar);
         }
 
         @Override
@@ -122,6 +126,13 @@ public class GenerateQRActivity extends AppCompatActivity {
 
             rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
             rootView.findViewById(R.id.QR_animation_view).setVisibility(View.GONE);
+            //pb = (ProgressBar) rootView.findViewById(R.id.progressBarShowQR).findViewById(R.id.progressBar);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            Log.v(LOG_TAG, "Progress Update" + values[0]);
+            pb.setProgress(values[0]);
         }
 
         private Bitmap TextToImageEncode(String Value) throws WriterException {
@@ -149,9 +160,15 @@ public class GenerateQRActivity extends AppCompatActivity {
             Log.v(LOG_TAG, "QR Width: " + bitMatrixWidth + ", Height: " + bitMatrixHeight);
             int[] pixels = new int[bitMatrixWidth * bitMatrixHeight];
 
+            int percentage = 0;
+            int increment = bitMatrixHeight/100;
+
             for (int y = 0; y < bitMatrixHeight; y++) {
                 int offset = y * bitMatrixWidth;
-
+                if (y%increment == 0 && percentage < 100) {
+                    percentage++;
+                    publishProgress(percentage);
+                }
                 for (int x = 0; x < bitMatrixWidth; x++) {
 //                getResources().getColor(R.color.QR)
                     pixels[offset + x] = bitMatrix.get(x, y) ?
