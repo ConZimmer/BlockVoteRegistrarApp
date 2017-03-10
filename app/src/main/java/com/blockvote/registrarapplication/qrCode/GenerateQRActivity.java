@@ -8,6 +8,8 @@ import android.preference.Preference;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -125,8 +127,38 @@ public class GenerateQRActivity extends AppCompatActivity {
             ImageView imageView = (ImageView) rootView.findViewById(R.id.image_QRCode);
             imageView.setImageBitmap(bitmap);
 
-            rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
+/*
+            rootView.findViewById(R.id.qrCode_progress).startAnimation(AnimationUtils.loadAnimation(GenerateQRActivity.this,R.anim.fadeout));
             rootView.findViewById(R.id.qrCode_progress).setVisibility(View.GONE);
+
+            rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.image_QRCode).startAnimation(AnimationUtils.loadAnimation(GenerateQRActivity.this,R.anim.fadein));
+*/
+
+            final Animation fadeOut = AnimationUtils.loadAnimation(GenerateQRActivity.this,R.anim.fadeout);
+            final Animation fadeIn = AnimationUtils.loadAnimation(GenerateQRActivity.this,R.anim.fadein);
+
+            fadeOut.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
+                    rootView.findViewById(R.id.image_QRCode).startAnimation(fadeIn);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+
+            rootView.findViewById(R.id.qrCode_progress).startAnimation(fadeOut);
+            rootView.findViewById(R.id.qrCode_progress).setVisibility(View.GONE);
+
         }
 
         @Override
