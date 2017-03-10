@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TabHost;
 
 import com.blockvote.registrarapplication.qrCode.ReadQRActivity;
+import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.google.zxing.integration.android.IntentIntegrator;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
         */
 
 
+
+
         TabHost host = (TabHost)findViewById(R.id.main_tab_menu);
         host.setup();
 
@@ -94,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(readQRIntent);
             }
         });
-        
+
     }
 
 

@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -97,13 +98,13 @@ public class GenerateQRActivity extends AppCompatActivity {
     public class QRGenerator extends AsyncTask<String, Integer, Bitmap> {
         private final String LOG_TAG= "QRGenerator";
         private View rootView;
-        private ProgressBar pb;
+        private ArcProgress pb;
 
         public QRGenerator(View rootView){
             this.rootView=rootView;
             Log.e(LOG_TAG, "QR generation started... " );
             View progressBarView = (View) findViewById(R.id.progressBarShowQR);
-            pb = (ProgressBar) progressBarView.findViewById(R.id.progressBar);
+            pb = (ArcProgress) findViewById(R.id.qrCode_progress);
         }
 
         @Override
@@ -125,8 +126,7 @@ public class GenerateQRActivity extends AppCompatActivity {
             imageView.setImageBitmap(bitmap);
 
             rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.QR_animation_view).setVisibility(View.GONE);
-            //pb = (ProgressBar) rootView.findViewById(R.id.progressBarShowQR).findViewById(R.id.progressBar);
+            rootView.findViewById(R.id.qrCode_progress).setVisibility(View.GONE);
         }
 
         @Override
