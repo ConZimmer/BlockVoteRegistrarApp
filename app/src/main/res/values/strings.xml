@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BlockVote registration</string>
+    <string name="app_name">BlockVote Registration</string>
     <string name="accept_button_text">Accept Voter</string>
     <string name="reject_button_text">Reject Voter</string>
     <string name="OK_button_text">OK</string>
