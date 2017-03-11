@@ -1,12 +1,10 @@
 package com.blockvote.registrarapplication.qrCode;
 
 import android.animation.ValueAnimator;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
@@ -14,11 +12,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.google.zxing.BarcodeFormat;
@@ -33,8 +27,6 @@ import com.blockvote.registrarapplication.R;
 
 import com.blockvote.registrarapplication.crypto.*;
 
-import java.math.BigInteger;
-
 public class GenerateQRActivity extends AppCompatActivity {
 
     private final String LOG_TAG = GenerateQRActivity.class.getSimpleName();
@@ -46,6 +38,8 @@ public class GenerateQRActivity extends AppCompatActivity {
     private TokenRequest tokenRequest;
     private byte[] signature;
     private SharedPreferences dataStore;
+    private ValueAnimator animator;
+    private View progressBarView;
 
     GenerateQRActivity generateQRActivity;
 
@@ -64,6 +58,12 @@ public class GenerateQRActivity extends AppCompatActivity {
 
         imageView = (ImageView)findViewById(R.id.image_QRCode);
         imageView.setVisibility(View.GONE);
+        findViewById(R.id.textView_show_QR_code).setVisibility(View.GONE);
+
+        progressBarView = (View) findViewById(R.id.progressBarShowQR);
+        progressBarView.findViewById(R.id.button_Continue).setVisibility(View.GONE);
+        progressBarView.findViewById(R.id.button_Back).setVisibility(View.GONE);
+
 
         View rootView = this.findViewById(android.R.id.content);
 
@@ -108,7 +108,7 @@ public class GenerateQRActivity extends AppCompatActivity {
         final ImageView backgroundOne = (ImageView) findViewById(R.id.background_one);
         final ImageView backgroundTwo = (ImageView) findViewById(R.id.background_two);
 
-        final ValueAnimator animator = ValueAnimator.ofFloat(0.1f, 0.9f);
+        animator = ValueAnimator.ofFloat(0.1f, 0.9f);
         animator.setRepeatMode(ValueAnimator.REVERSE);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setInterpolator(new LinearInterpolator());
@@ -146,7 +146,6 @@ public class GenerateQRActivity extends AppCompatActivity {
         public QRGenerator(View rootView){
             this.rootView=rootView;
             Log.e(LOG_TAG, "QR generation started... " );
-            View progressBarView = (View) findViewById(R.id.progressBarShowQR);
             pb = (ArcProgress) findViewById(R.id.qrCode_arc_progress);
         }
 
@@ -189,6 +188,14 @@ public class GenerateQRActivity extends AppCompatActivity {
                 public void onAnimationEnd(Animation animation) {
                     rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
                     rootView.findViewById(R.id.image_QRCode).startAnimation(fadeIn);
+                    rootView.findViewById(R.id.textView_show_QR_code).setVisibility(View.VISIBLE);
+                    rootView.findViewById(R.id.textView_show_QR_code).startAnimation(fadeIn);
+
+                    progressBarView.findViewById(R.id.button_Continue).setVisibility(View.VISIBLE);
+                    progressBarView.findViewById(R.id.button_Continue).startAnimation(fadeIn);
+                    progressBarView.findViewById(R.id.button_Back).setVisibility(View.VISIBLE);
+                    progressBarView.findViewById(R.id.button_Back).startAnimation(fadeIn);
+
                 }
 
                 @Override
@@ -197,8 +204,20 @@ public class GenerateQRActivity extends AppCompatActivity {
                 }
             });
 
+
+            animator.pause();
+
             rootView.findViewById(R.id.qrCode_progress).startAnimation(fadeOut);
+            rootView.findViewById(R.id.background_one).startAnimation(fadeOut);
+            rootView.findViewById(R.id.background_two).startAnimation(fadeOut);
+            rootView.findViewById(R.id.textView_generate_QR_code).startAnimation(fadeOut);
             rootView.findViewById(R.id.qrCode_progress).setVisibility(View.GONE);
+            rootView.findViewById(R.id.background_one).setVisibility(View.GONE);
+            rootView.findViewById(R.id.background_two).setVisibility(View.GONE);
+            rootView.findViewById(R.id.textView_generate_QR_code).setVisibility(View.GONE);
+
+
+
 
         }
 
