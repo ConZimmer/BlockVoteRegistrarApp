@@ -5,6 +5,7 @@
     android:id="@+id/activity_generate_qr"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context="com.blockvote.registrarapplication.qrCode.GenerateQRActivity">
 
 
@@ -75,7 +76,7 @@
 
     <TextView
         android:id="@+id/textView_show_QR_code"
-        android:textSize="@dimen/large_font"
+        android:textSize="@dimen/extra_large_font"
         android:text="Voter must scan this QR code."
         android:textStyle="bold"
         android:gravity="center"

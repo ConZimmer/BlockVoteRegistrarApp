@@ -22,6 +22,7 @@ import com.google.zxing.common.BitMatrix;
 import org.spongycastle.util.encoders.Base64;
 import com.google.gson.Gson;
 import android.content.SharedPreferences;
+import android.widget.ProgressBar;
 
 import com.blockvote.registrarapplication.R;
 
@@ -41,6 +42,7 @@ public class GenerateQRActivity extends AppCompatActivity {
     private ValueAnimator animator;
     private View progressBarView;
     private int ScreenWidth;
+    private ProgressBar registrationProgress;
 
     GenerateQRActivity generateQRActivity;
 
@@ -62,9 +64,14 @@ public class GenerateQRActivity extends AppCompatActivity {
         imageView.setVisibility(View.GONE);
         findViewById(R.id.textView_show_QR_code).setVisibility(View.GONE);
 
+
         progressBarView = (View) findViewById(R.id.progressBarShowQR);
         progressBarView.findViewById(R.id.button_Continue).setVisibility(View.GONE);
         progressBarView.findViewById(R.id.button_Back).setVisibility(View.GONE);
+
+        registrationProgress = (ProgressBar) progressBarView.findViewById(R.id.progressBar);
+        registrationProgress.setProgress(50);
+        registrationProgress.setScaleY(2f);
 
 
         View rootView = this.findViewById(android.R.id.content);
@@ -191,6 +198,8 @@ public class GenerateQRActivity extends AppCompatActivity {
                     progressBarView.findViewById(R.id.button_Continue).startAnimation(fadeIn);
                     progressBarView.findViewById(R.id.button_Back).setVisibility(View.VISIBLE);
                     progressBarView.findViewById(R.id.button_Back).startAnimation(fadeIn);
+
+                    registrationProgress.setProgress(75);
 
                 }
 

@@ -38,7 +38,9 @@
 
     <Button
         android:id="@+id/button_Continue"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:text="Continue"
+        android:textColor="@color/colorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/ProgressBarLayout"
@@ -52,7 +54,9 @@
 
     <Button
         android:id="@+id/button_Back"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:text="Back"
+        android:textColor="@color/colorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/ProgressBarLayout"
