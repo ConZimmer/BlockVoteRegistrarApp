@@ -35,11 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
         readQRIntent = new Intent(this, ReadQRActivity.class);
 
-        // Hide the status bar.
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
-
         //ActionBar myActionBar = (ActionBar) getSupportActionBar();
         //myActionBar.setTitle("Testing");
 
@@ -98,6 +93,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Hide the status bar.
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
 

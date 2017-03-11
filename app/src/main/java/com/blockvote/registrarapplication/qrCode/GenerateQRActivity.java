@@ -1,15 +1,19 @@
 package com.blockvote.registrarapplication.qrCode;
 
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -35,7 +39,7 @@ public class GenerateQRActivity extends AppCompatActivity {
 
     private final String LOG_TAG = GenerateQRActivity.class.getSimpleName();
     private ImageView imageView;
-    private final static int QRcodeWidth = 1000 ;
+    private static int QRcodeWidth = 1000 ;
     private Bitmap bitmap ;
     private String blindedTokenString;
     private String signedToken;
@@ -48,6 +52,13 @@ public class GenerateQRActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        QRcodeWidth = width;
+
         setContentView(R.layout.activity_generate_qr);
         generateQRActivity = this;
 
@@ -55,7 +66,6 @@ public class GenerateQRActivity extends AppCompatActivity {
         imageView.setVisibility(View.GONE);
 
         View rootView = this.findViewById(android.R.id.content);
-
 
         blindedTokenString = getIntent().getStringExtra("ScannedQRCodeBlindedTokenString");
 
@@ -94,6 +104,37 @@ public class GenerateQRActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 */
+
+        final ImageView backgroundOne = (ImageView) findViewById(R.id.background_one);
+        final ImageView backgroundTwo = (ImageView) findViewById(R.id.background_two);
+
+        final ValueAnimator animator = ValueAnimator.ofFloat(0.1f, 0.9f);
+        animator.setRepeatMode(ValueAnimator.REVERSE);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setDuration(5000L);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                final float progress = (float) animation.getAnimatedValue();
+                final float width = backgroundOne.getWidth();
+                final float translationX = width * progress;
+                backgroundOne.setTranslationX(translationX);
+                backgroundTwo.setTranslationX(translationX - width);
+            }
+        });
+        animator.start();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Hide the status bar.
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
 
@@ -106,7 +147,7 @@ public class GenerateQRActivity extends AppCompatActivity {
             this.rootView=rootView;
             Log.e(LOG_TAG, "QR generation started... " );
             View progressBarView = (View) findViewById(R.id.progressBarShowQR);
-            pb = (ArcProgress) findViewById(R.id.qrCode_progress);
+            pb = (ArcProgress) findViewById(R.id.qrCode_arc_progress);
         }
 
         @Override

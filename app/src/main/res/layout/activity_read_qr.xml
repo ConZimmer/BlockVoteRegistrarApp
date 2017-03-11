@@ -4,7 +4,6 @@
     android:id="@+id/activity_beam_test"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.blockvote.registrarapplication.qrCode.ReadQRActivity"
     android:background="@color/com_auth0_lock_disabled_text">
 
