@@ -31,7 +31,7 @@ public class GenerateQRActivity extends AppCompatActivity {
 
     private final String LOG_TAG = GenerateQRActivity.class.getSimpleName();
     private ImageView imageView;
-    private static int QRcodeWidth = 1000 ;
+    private static int QRcodeWidth = 500 ;
     private Bitmap bitmap ;
     private String blindedTokenString;
     private String signedToken;
@@ -40,6 +40,7 @@ public class GenerateQRActivity extends AppCompatActivity {
     private SharedPreferences dataStore;
     private ValueAnimator animator;
     private View progressBarView;
+    private int ScreenWidth;
 
     GenerateQRActivity generateQRActivity;
 
@@ -51,7 +52,8 @@ public class GenerateQRActivity extends AppCompatActivity {
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
-        QRcodeWidth = width;
+        ScreenWidth = width;
+
 
         setContentView(R.layout.activity_generate_qr);
         generateQRActivity = this;
@@ -112,7 +114,7 @@ public class GenerateQRActivity extends AppCompatActivity {
         animator.setRepeatMode(ValueAnimator.REVERSE);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setInterpolator(new LinearInterpolator());
-        animator.setDuration(5000L);
+        animator.setDuration(3000L);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -165,15 +167,8 @@ public class GenerateQRActivity extends AppCompatActivity {
         public void onPostExecute(Bitmap bitmap){
             Log.v(LOG_TAG, "Displaying the QR now");
             ImageView imageView = (ImageView) rootView.findViewById(R.id.image_QRCode);
-            imageView.setImageBitmap(bitmap);
 
-/*
-            rootView.findViewById(R.id.qrCode_progress).startAnimation(AnimationUtils.loadAnimation(GenerateQRActivity.this,R.anim.fadeout));
-            rootView.findViewById(R.id.qrCode_progress).setVisibility(View.GONE);
-
-            rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.image_QRCode).startAnimation(AnimationUtils.loadAnimation(GenerateQRActivity.this,R.anim.fadein));
-*/
+            imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, ScreenWidth, ScreenWidth, false));
 
             final Animation fadeOut = AnimationUtils.loadAnimation(GenerateQRActivity.this,R.anim.fadeout);
             final Animation fadeIn = AnimationUtils.loadAnimation(GenerateQRActivity.this,R.anim.fadein);
@@ -188,6 +183,7 @@ public class GenerateQRActivity extends AppCompatActivity {
                 public void onAnimationEnd(Animation animation) {
                     rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
                     rootView.findViewById(R.id.image_QRCode).startAnimation(fadeIn);
+
                     rootView.findViewById(R.id.textView_show_QR_code).setVisibility(View.VISIBLE);
                     rootView.findViewById(R.id.textView_show_QR_code).startAnimation(fadeIn);
 

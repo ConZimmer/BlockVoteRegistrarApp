@@ -90,7 +90,7 @@
         android:layout_below="@id/textView_show_QR_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:scaleType="fitXY"
         />
 
     <fragment android:name="com.blockvote.registrarapplication.MyProgressBar"
