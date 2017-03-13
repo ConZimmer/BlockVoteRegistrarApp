@@ -35,7 +35,7 @@ import retrofit2.Response;
 public class ReadQRActivity extends AppCompatActivity {
 
     private EditText voterID;
-    private String EditTextValue;
+    private int i_voterID;
     private IntentIntegrator integrator;
     private Intent mainMenu;
 
@@ -130,8 +130,11 @@ public class ReadQRActivity extends AppCompatActivity {
                 Log.d("MainActivity", "Scanned");
                 //Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 Intent lockIntent = new Intent(this, GenerateQRActivity.class);
-                lockIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                lockIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                //lockIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 lockIntent.putExtra("ScannedQRCodeBlindedTokenString", result.getContents());
+                lockIntent.putExtra("savedQRCode", false);
+                lockIntent.putExtra("voterID", i_voterID);
                 startActivity(lockIntent);
             }
         } else {
@@ -142,6 +145,15 @@ public class ReadQRActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        //TODO remove, testing passing values to an already running activity
+        Intent lockIntent = new Intent(this, GenerateQRActivity.class);
+        lockIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        //lockIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        lockIntent.putExtra("ScannedQRCodeBlindedTokenString", "some random string....");
+        lockIntent.putExtra("savedQRCode", true);
+        lockIntent.putExtra("voterID", 1337);
+        startActivity(lockIntent);
 
     }
 
@@ -163,7 +175,7 @@ public class ReadQRActivity extends AppCompatActivity {
                     .show();
             return false;
         }
-        EditTextValue = govID;
+        i_voterID = Integer.parseInt(govID);
 
         Log.d("LOG INFO", "GOV ID: " + govID );
 

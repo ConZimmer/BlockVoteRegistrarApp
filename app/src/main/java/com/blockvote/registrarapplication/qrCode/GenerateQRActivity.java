@@ -49,6 +49,9 @@ public class GenerateQRActivity extends AppCompatActivity {
     private int ScreenWidth;
     private ProgressBar registrationProgress;
     private Intent mainMenu;
+    private Button buttonContinue, buttonSaveQR;
+    private boolean savedQRCode;
+    private int voterID;
 
     GenerateQRActivity generateQRActivity;
 
@@ -65,24 +68,40 @@ public class GenerateQRActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_generate_qr);
         generateQRActivity = this;
+        processExtraData();
 
         mainMenu = new Intent(this, MainActivity.class);
         mainMenu.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
         imageView = (ImageView)findViewById(R.id.image_QRCode);
-        imageView.setVisibility(View.GONE);
-        findViewById(R.id.textView_show_QR_code).setVisibility(View.GONE);
-
 
         progressBarView = (View) findViewById(R.id.progressBarShowQR);
-        Button buttonContinue = (Button)progressBarView.findViewById(R.id.button_Continue);
-        Button buttonSaveQR = (Button)progressBarView.findViewById(R.id.button_Back);
+        registrationProgress = (ProgressBar) progressBarView.findViewById(R.id.progressBar);
+        registrationProgress.setScaleY(2f);
 
+        buttonContinue = (Button)progressBarView.findViewById(R.id.button_Continue);
+        buttonSaveQR = (Button)progressBarView.findViewById(R.id.button_Back);
         buttonContinue.setText("Complete");
-        buttonContinue.setVisibility(View.GONE);
-
         buttonSaveQR.setText("Save QR");
-        buttonSaveQR.setVisibility(View.GONE);
+
+        final ImageView backgroundOne = (ImageView) findViewById(R.id.background_one);
+        final ImageView backgroundTwo = (ImageView) findViewById(R.id.background_two);
+
+        animator = ValueAnimator.ofFloat(0.1f, 0.9f);
+        animator.setRepeatMode(ValueAnimator.REVERSE);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setDuration(3000L);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                final float progress = (float) animation.getAnimatedValue();
+                final float width = backgroundOne.getWidth();
+                final float translationX = width * progress;
+                backgroundOne.setTranslationX(translationX);
+                backgroundTwo.setTranslationX(translationX - width);
+            }
+        });
 
         buttonSaveQR.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,72 +137,6 @@ public class GenerateQRActivity extends AppCompatActivity {
             }
         });
 
-
-        registrationProgress = (ProgressBar) progressBarView.findViewById(R.id.progressBar);
-        registrationProgress.setProgress(50);
-        registrationProgress.setScaleY(2f);
-
-
-        View rootView = this.findViewById(android.R.id.content);
-
-        blindedTokenString = getIntent().getStringExtra("ScannedQRCodeBlindedTokenString");
-
-        try
-        {
-            tokenRequest = new TokenRequest(Base64.decode(blindedTokenString));
-
-            dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
-
-            Gson gson = new Gson();
-
-            String json = dataStore.getString("registrar", "");
-            if(json==null){
-                Log.e("ERROR", "ERROR json is null");
-            }
-            Registrar registrar = gson.fromJson(json, Registrar.class);
-
-            byte[] temp = registrar.sign(tokenRequest);
-
-            signedToken = Base64.toBase64String(temp);
-        }
-        catch(Exception ex)
-        {
-            Log.e("ERROR", "Error reading QR code or signing token");
-        }
-
-        new QRGenerator(rootView).execute(signedToken);
-/*
-        try {
-            //TODO: Do this processing using AsyncTask
-            bitmap = TextToImageEncode(signedToken);
-
-            imageView.setImageBitmap(bitmap);
-
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
-*/
-
-        final ImageView backgroundOne = (ImageView) findViewById(R.id.background_one);
-        final ImageView backgroundTwo = (ImageView) findViewById(R.id.background_two);
-
-        animator = ValueAnimator.ofFloat(0.1f, 0.9f);
-        animator.setRepeatMode(ValueAnimator.REVERSE);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.setInterpolator(new LinearInterpolator());
-        animator.setDuration(3000L);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                final float progress = (float) animation.getAnimatedValue();
-                final float width = backgroundOne.getWidth();
-                final float translationX = width * progress;
-                backgroundOne.setTranslationX(translationX);
-                backgroundTwo.setTranslationX(translationX - width);
-            }
-        });
-        animator.start();
-
     }
 
     @Override
@@ -194,6 +147,92 @@ public class GenerateQRActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
+
+        //Check to see if we need to create the QR code
+        //savedQRCode = getIntent().getBooleanExtra("savedQRCode",false);
+        //voterID = getIntent().getIntExtra("voterID",0);
+
+        View rootView = this.findViewById(android.R.id.content);
+
+        if (!savedQRCode)
+        {
+            //new voter
+            imageView.setVisibility(View.GONE);
+            findViewById(R.id.textView_show_QR_code).setVisibility(View.GONE);
+            buttonSaveQR.setVisibility(View.GONE);
+            buttonContinue.setVisibility(View.GONE);
+
+            rootView.findViewById(R.id.qrCode_progress).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.background_one).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.background_two).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.textView_generate_QR_code).setVisibility(View.VISIBLE);
+
+            registrationProgress.setProgress(50);
+
+
+            //blindedTokenString = getIntent().getStringExtra("ScannedQRCodeBlindedTokenString");
+
+            try
+            {
+                tokenRequest = new TokenRequest(Base64.decode(blindedTokenString));
+
+                dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
+
+                Gson gson = new Gson();
+
+                String json = dataStore.getString("registrar", "");
+                if(json==null){
+                    Log.e("ERROR", "ERROR json is null");
+                }
+                Registrar registrar = gson.fromJson(json, Registrar.class);
+
+                byte[] temp = registrar.sign(tokenRequest);
+
+                signedToken = Base64.toBase64String(temp);
+            }
+            catch(Exception ex)
+            {
+                Log.e("ERROR", "Error reading QR code or signing token");
+            }
+
+
+            //Generate QR code using AsyncTask
+            new QRGenerator(rootView).execute(signedToken);
+
+            animator.start();
+
+        }
+        else
+        {
+
+            rootView.findViewById(R.id.qrCode_progress).setVisibility(View.GONE);
+            rootView.findViewById(R.id.background_one).setVisibility(View.GONE);
+            rootView.findViewById(R.id.background_two).setVisibility(View.GONE);
+            rootView.findViewById(R.id.textView_generate_QR_code).setVisibility(View.GONE);
+
+            rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.textView_show_QR_code).setVisibility(View.VISIBLE);
+            progressBarView.findViewById(R.id.button_Continue).setVisibility(View.VISIBLE);
+            progressBarView.findViewById(R.id.button_Back).setVisibility(View.VISIBLE);
+            registrationProgress.setProgress(75);
+
+        }
+
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        processExtraData();
+    }
+
+    private void processExtraData(){
+        Intent intent = getIntent();
+        savedQRCode = getIntent().getBooleanExtra("savedQRCode",false);
+        voterID = getIntent().getIntExtra("voterID",0);
+        blindedTokenString = getIntent().getStringExtra("ScannedQRCodeBlindedTokenString");
     }
 
     @Override
@@ -275,8 +314,6 @@ public class GenerateQRActivity extends AppCompatActivity {
             rootView.findViewById(R.id.background_one).setVisibility(View.GONE);
             rootView.findViewById(R.id.background_two).setVisibility(View.GONE);
             rootView.findViewById(R.id.textView_generate_QR_code).setVisibility(View.GONE);
-
-
 
 
         }

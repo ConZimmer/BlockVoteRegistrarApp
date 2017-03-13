@@ -37,7 +37,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".qrCode.GenerateQRActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop" />
         <activity
             android:name="com.auth0.android.lock.LockActivity"
             android:label="@string/app_name"
