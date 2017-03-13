@@ -34,9 +34,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         readQRIntent = new Intent(this, ReadQRActivity.class);
-
-        //ActionBar myActionBar = (ActionBar) getSupportActionBar();
-        //myActionBar.setTitle("Testing");
+        readQRIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(myToolbar);
@@ -51,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
         pb.setProgress(80);
         pb.setScaleY(2f);
         */
-
-
 
 
         TabHost host = (TabHost)findViewById(R.id.main_tab_menu);

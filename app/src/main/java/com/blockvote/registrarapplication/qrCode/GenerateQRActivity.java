@@ -1,10 +1,13 @@
 package com.blockvote.registrarapplication.qrCode;
 
 import android.animation.ValueAnimator;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
@@ -12,8 +15,10 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 
+import com.blockvote.registrarapplication.MainActivity;
 import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -43,6 +48,7 @@ public class GenerateQRActivity extends AppCompatActivity {
     private View progressBarView;
     private int ScreenWidth;
     private ProgressBar registrationProgress;
+    private Intent mainMenu;
 
     GenerateQRActivity generateQRActivity;
 
@@ -60,14 +66,58 @@ public class GenerateQRActivity extends AppCompatActivity {
         setContentView(R.layout.activity_generate_qr);
         generateQRActivity = this;
 
+        mainMenu = new Intent(this, MainActivity.class);
+        mainMenu.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
         imageView = (ImageView)findViewById(R.id.image_QRCode);
         imageView.setVisibility(View.GONE);
         findViewById(R.id.textView_show_QR_code).setVisibility(View.GONE);
 
 
         progressBarView = (View) findViewById(R.id.progressBarShowQR);
-        progressBarView.findViewById(R.id.button_Continue).setVisibility(View.GONE);
-        progressBarView.findViewById(R.id.button_Back).setVisibility(View.GONE);
+        Button buttonContinue = (Button)progressBarView.findViewById(R.id.button_Continue);
+        Button buttonSaveQR = (Button)progressBarView.findViewById(R.id.button_Back);
+
+        buttonContinue.setText("Complete");
+        buttonContinue.setVisibility(View.GONE);
+
+        buttonSaveQR.setText("Save QR");
+        buttonSaveQR.setVisibility(View.GONE);
+
+        buttonSaveQR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(GenerateQRActivity.this)
+                        .setMessage("If you save, voter registration will not be complete!\nOnly save if voter has NOT scanned QR code.")
+                        .setCancelable(false)
+                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //Complete
+                                //TODO save QR code
+                                startActivity(mainMenu);
+                            }
+                        })
+                        .setNegativeButton("Go Back", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // Hide the status bar.
+                                View decorView = getWindow().getDecorView();
+                                int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+                                decorView.setSystemUiVisibility(uiOptions);
+                            }
+                        })
+                        .show();
+            }
+        });
+
+        buttonContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO wrtie to block chain
+                //TODO save QR code
+                startActivity(mainMenu);
+            }
+        });
+
 
         registrationProgress = (ProgressBar) progressBarView.findViewById(R.id.progressBar);
         registrationProgress.setProgress(50);
@@ -144,6 +194,11 @@ public class GenerateQRActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 
 
@@ -279,4 +334,5 @@ public class GenerateQRActivity extends AppCompatActivity {
             return bitmap;
         }
     }
+
 }

@@ -2,10 +2,12 @@ package com.blockvote.registrarapplication.qrCode;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -16,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blockvote.registrarapplication.MainActivity;
 import com.blockvote.registrarapplication.R;
 import com.blockvote.registrarapplication.model.RegisterVoterModel;
 import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
@@ -31,21 +34,26 @@ import retrofit2.Response;
 
 public class ReadQRActivity extends AppCompatActivity {
 
-    private EditText editText;
+    private EditText voterID;
     private String EditTextValue;
     private IntentIntegrator integrator;
+    private Intent mainMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_qr);
 
-        editText = (EditText)findViewById(R.id.editText);
+        mainMenu = new Intent(this, MainActivity.class);
+        mainMenu.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
+        voterID = (EditText)findViewById(R.id.editTextVoterID);
         TextView textView = (TextView) this.findViewById(R.id.readQR_blurb);
         textView.setText("Please Verify Persons Identity and enter their 'gov ID' number");
 
         View progressMenu = findViewById(R.id.progressBarEnterID);
         Button readQRButton = (Button)progressMenu.findViewById(R.id.button_Continue);
+        Button backButton = (Button)progressMenu.findViewById(R.id.button_Back);
 
         final Activity activity = this;
         readQRButton.setOnClickListener(new View.OnClickListener() {
@@ -60,8 +68,7 @@ public class ReadQRActivity extends AppCompatActivity {
                 integrator.setBeepEnabled(false);
                 integrator.setBarcodeImageEnabled(false);
 
-                //TODO uncomment: if (registerVoter()) {
-                if(true){
+                if (registerVoter()) {
                     integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
                     integrator.setPrompt("Scan");
                     integrator.setCameraId(0);
@@ -73,6 +80,13 @@ public class ReadQRActivity extends AppCompatActivity {
                 {
 
                 }
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(mainMenu);
             }
         });
 
@@ -97,6 +111,8 @@ public class ReadQRActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        voterID.setText("");
+
         // Hide the status bar.
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -114,6 +130,7 @@ public class ReadQRActivity extends AppCompatActivity {
                 Log.d("MainActivity", "Scanned");
                 //Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 Intent lockIntent = new Intent(this, GenerateQRActivity.class);
+                lockIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 lockIntent.putExtra("ScannedQRCodeBlindedTokenString", result.getContents());
                 startActivity(lockIntent);
             }
@@ -123,16 +140,35 @@ public class ReadQRActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
+
     private boolean registerVoter(){
 
-        String govID = "";
-        if(editText != null) {
-            govID = editText.getText().toString();
+        String govID = null;
+        if(voterID != null){
+            govID = voterID.getText().toString();
+        }
+        if (govID == null || govID.equals("") )
+        {
+            new AlertDialog.Builder(this)
+                    .setMessage("Please enter the voter ID")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    })
+                    .show();
+            return false;
         }
         EditTextValue = govID;
 
         Log.d("LOG INFO", "GOV ID: " + govID );
 
+        return true;
+        /* TODO uncomment
         BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
         BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
         Call<RegisterVoterModel> call = apiService.registerVoter("US", govID, "david");
@@ -169,6 +205,8 @@ public class ReadQRActivity extends AppCompatActivity {
 
 
         return false;
+
+        */
     }
 
     private void startQRCodeRead()
