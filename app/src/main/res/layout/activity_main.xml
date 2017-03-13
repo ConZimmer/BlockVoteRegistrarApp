@@ -5,7 +5,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/com_auth0_lock_disabled_text"
+    android:background="#ffffff"
     tools:context="com.blockvote.registrarapplication.MainActivity">
 
     <android.support.v7.widget.Toolbar
@@ -40,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/tab1_register_voter"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -52,6 +52,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/colorPrimary"
                         android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:layout_centerInParent="true"
                         android:layout_gravity="center"
                         app:srcCompat="@drawable/add_user"
                         style="@style/Widget.AppCompat.ImageButton"
@@ -59,13 +60,17 @@
 
                     <TextView
                         android:id="@+id/tab1_text"
+                        android:layout_below="@+id/imageButtonAddVoter"
+                        android:textSize="@dimen/large_font"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="#000000"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="Register a new voter" />
 
 
-                </LinearLayout>
+                </RelativeLayout>
 
                 <LinearLayout
                     android:id="@+id/tab2_incomplete_registrations"

@@ -107,7 +107,7 @@ public class GenerateQRActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 new AlertDialog.Builder(GenerateQRActivity.this)
-                        .setMessage("If you save, voter registration will not be complete!\nOnly save if voter has NOT scanned QR code.")
+                        .setMessage("If you save, voter registration will NOT be completed!\nOnly save if voter has NOT scanned QR code.")
                         .setCancelable(false)
                         .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {

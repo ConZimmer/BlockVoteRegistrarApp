@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,8 @@ public class ReadQRActivity extends AppCompatActivity {
     private int i_voterID;
     private IntentIntegrator integrator;
     private Intent mainMenu;
+    private View progressBarView;
+    private ProgressBar registrationProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +50,13 @@ public class ReadQRActivity extends AppCompatActivity {
         mainMenu = new Intent(this, MainActivity.class);
         mainMenu.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
+        progressBarView = (View) findViewById(R.id.progressBarEnterID);
+        registrationProgress = (ProgressBar) progressBarView.findViewById(R.id.progressBar);
+        registrationProgress.setScaleY(2f);
+
         voterID = (EditText)findViewById(R.id.editTextVoterID);
         TextView textView = (TextView) this.findViewById(R.id.readQR_blurb);
-        textView.setText("Please Verify Persons Identity and enter their 'gov ID' number");
+        textView.setText("Verify voters identity and enter their 'voter ID'");
 
         View progressMenu = findViewById(R.id.progressBarEnterID);
         Button readQRButton = (Button)progressMenu.findViewById(R.id.button_Continue);
@@ -111,6 +118,7 @@ public class ReadQRActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        registrationProgress.setProgress(25);
         voterID.setText("");
 
         // Hide the status bar.
