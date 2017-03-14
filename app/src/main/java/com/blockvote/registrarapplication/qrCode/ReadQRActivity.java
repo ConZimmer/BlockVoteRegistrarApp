@@ -21,12 +21,17 @@ import android.widget.Toast;
 
 import com.blockvote.registrarapplication.MainActivity;
 import com.blockvote.registrarapplication.R;
+import com.blockvote.registrarapplication.SavedQRCode;
 import com.blockvote.registrarapplication.model.RegisterVoterModel;
 import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
 import com.blockvote.registrarapplication.network.BlockVoteServerInstance;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.lang.reflect.Type;
+import java.util.LinkedList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -41,6 +46,7 @@ public class ReadQRActivity extends AppCompatActivity {
     private Intent mainMenu;
     private View progressBarView;
     private ProgressBar registrationProgress;
+    private SharedPreferences dataStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +145,6 @@ public class ReadQRActivity extends AppCompatActivity {
                 //Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 Intent lockIntent = new Intent(this, GenerateQRActivity.class);
                 lockIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                //lockIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 lockIntent.putExtra("ScannedQRCodeBlindedTokenString", result.getContents());
                 lockIntent.putExtra("savedQRCode", false);
                 lockIntent.putExtra("voterID", i_voterID);
@@ -153,15 +158,6 @@ public class ReadQRActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
-        //TODO remove, testing passing values to an already running activity
-        Intent lockIntent = new Intent(this, GenerateQRActivity.class);
-        lockIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        //lockIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        lockIntent.putExtra("ScannedQRCodeBlindedTokenString", "some random string....");
-        lockIntent.putExtra("savedQRCode", true);
-        lockIntent.putExtra("voterID", 1337);
-        startActivity(lockIntent);
 
     }
 
@@ -183,6 +179,38 @@ public class ReadQRActivity extends AppCompatActivity {
                     .show();
             return false;
         }
+
+        List<SavedQRCode> savedQRcodeList;
+        dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
+
+        Gson gson = new Gson();
+
+        String json = dataStore.getString("SavedQRCodeList", "");
+        if(json==null){
+            Log.e("ERROR", "ERROR json is null");
+        }
+
+        Type type = new TypeToken<List<SavedQRCode>>(){}.getType();
+        savedQRcodeList = gson.fromJson(json, type);
+
+        if (savedQRcodeList != null) {
+            for (SavedQRCode QRcode : savedQRcodeList) {
+                if (QRcode.voterID.equals(govID)) {
+                    new AlertDialog.Builder(this)
+                            .setMessage("Duplicate voter ID found in registrar app.")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            })
+                            .show();
+                    return false;
+                }
+            }
+        }
+
+
+
         i_voterID = Integer.parseInt(govID);
 
         Log.d("LOG INFO", "GOV ID: " + govID );
@@ -227,11 +255,6 @@ public class ReadQRActivity extends AppCompatActivity {
         return false;
 
         */
-    }
-
-    private void startQRCodeRead()
-    {
-        integrator.initiateScan();
     }
 
 }

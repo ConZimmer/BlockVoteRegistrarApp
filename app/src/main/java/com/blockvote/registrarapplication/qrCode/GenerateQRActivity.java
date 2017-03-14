@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,7 +20,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.blockvote.registrarapplication.MainActivity;
+import com.blockvote.registrarapplication.SavedQRCode;
 import com.github.lzyzsd.circleprogress.ArcProgress;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -32,6 +35,11 @@ import android.widget.ProgressBar;
 import com.blockvote.registrarapplication.R;
 
 import com.blockvote.registrarapplication.crypto.*;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class GenerateQRActivity extends AppCompatActivity {
 
@@ -51,7 +59,9 @@ public class GenerateQRActivity extends AppCompatActivity {
     private Intent mainMenu;
     private Button buttonContinue, buttonSaveQR;
     private boolean savedQRCode;
+    private boolean registrationCompleted;
     private int voterID;
+    List<SavedQRCode> savedQRcodeList;
 
     GenerateQRActivity generateQRActivity;
 
@@ -64,7 +74,6 @@ public class GenerateQRActivity extends AppCompatActivity {
         display.getSize(size);
         int width = size.x;
         ScreenWidth = width;
-
 
         setContentView(R.layout.activity_generate_qr);
         generateQRActivity = this;
@@ -111,8 +120,10 @@ public class GenerateQRActivity extends AppCompatActivity {
                         .setCancelable(false)
                         .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                //Complete
+
                                 //TODO save QR code
+                                saveQRCode(false);
+
                                 startActivity(mainMenu);
                             }
                         })
@@ -132,7 +143,12 @@ public class GenerateQRActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //TODO wrtie to block chain
+
+
                 //TODO save QR code
+                saveQRCode(true);
+
+
                 startActivity(mainMenu);
             }
         });
@@ -213,11 +229,20 @@ public class GenerateQRActivity extends AppCompatActivity {
             rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
             rootView.findViewById(R.id.textView_show_QR_code).setVisibility(View.VISIBLE);
             progressBarView.findViewById(R.id.button_Continue).setVisibility(View.VISIBLE);
-            progressBarView.findViewById(R.id.button_Back).setVisibility(View.VISIBLE);
-            registrationProgress.setProgress(75);
+
+            if(registrationCompleted)
+            {
+                progressBarView.findViewById(R.id.button_Back).setVisibility(View.GONE);
+                registrationProgress.setProgress(100);
+            }
+            else
+            {
+                progressBarView.findViewById(R.id.button_Back).setVisibility(View.VISIBLE);
+                registrationProgress.setProgress(75);
+            }
+
 
         }
-
 
     }
 
@@ -230,6 +255,7 @@ public class GenerateQRActivity extends AppCompatActivity {
 
     private void processExtraData(){
         Intent intent = getIntent();
+        registrationCompleted = getIntent().getBooleanExtra("completedRegistration", false);
         savedQRCode = getIntent().getBooleanExtra("savedQRCode",false);
         voterID = getIntent().getIntExtra("voterID",0);
         blindedTokenString = getIntent().getStringExtra("ScannedQRCodeBlindedTokenString");
@@ -238,6 +264,50 @@ public class GenerateQRActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+    }
+
+    private void saveQRCode(boolean registrationCompleted){
+        dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
+        SharedPreferences.Editor editor = dataStore.edit();
+
+        Gson gson = new Gson();
+
+        String json = dataStore.getString("SavedQRCodeList", "");
+        if(json==null){
+            Log.e("ERROR", "ERROR json is null");
+        }
+
+        Type type = new TypeToken<List<SavedQRCode>>(){}.getType();
+        savedQRcodeList = gson.fromJson(json, type);
+
+        if (savedQRcodeList == null)
+        {
+            savedQRcodeList = new LinkedList<SavedQRCode>();
+        }
+
+        SavedQRCode newCode = new SavedQRCode();
+        newCode.completed = registrationCompleted;
+
+        //TODO testing, reset to signedToken
+        //newCode.QRCode = signedToken;
+        newCode.QRCode = blindedTokenString;
+
+
+        newCode.voterID = Integer.toString(voterID);
+
+        for (SavedQRCode QRcode : savedQRcodeList) {
+            if(QRcode.voterID.equals(newCode.voterID)){
+                savedQRcodeList.remove(QRcode);
+            }
+        }
+
+        savedQRcodeList.add(newCode);
+
+        json = gson.toJson(savedQRcodeList);
+
+
+        editor.putString("SavedQRCodeList", json);
+        editor.commit();
     }
 
 

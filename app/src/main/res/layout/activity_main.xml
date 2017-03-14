@@ -92,10 +92,11 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <TextView
+                    <ListView
+                        android:id="@+id/list_completed"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="This is tab 3" />
+                        android:layout_height="wrap_content">
+                    </ListView>
 
                 </LinearLayout>
             </FrameLayout>

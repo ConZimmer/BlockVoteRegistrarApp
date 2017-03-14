@@ -4,12 +4,16 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,9 +25,16 @@ import android.widget.ProgressBar;
 import android.widget.TabHost;
 import android.widget.Toast;
 
+import com.blockvote.registrarapplication.qrCode.GenerateQRActivity;
 import com.blockvote.registrarapplication.qrCode.ReadQRActivity;
 import com.github.lzyzsd.circleprogress.ArcProgress;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.integration.android.IntentIntegrator;
+
+import java.lang.reflect.Type;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,8 +42,11 @@ public class MainActivity extends AppCompatActivity {
     private int progress = 0;
     private ListView incompleteList;
     private ListView completedList;
-
+    List<SavedQRCode> savedQRcodeList;
+    LinkedList<String> incompleteVoterIDs;
+    LinkedList<String> completedVoterIDs;
     private Intent readQRIntent;
+    private Intent viewQRIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,19 +56,25 @@ public class MainActivity extends AppCompatActivity {
         readQRIntent = new Intent(this, ReadQRActivity.class);
         readQRIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
+        viewQRIntent = new Intent(this, GenerateQRActivity.class);
+        viewQRIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
         Toolbar myToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(myToolbar);
         ActionBar myActionBar = (ActionBar) getSupportActionBar();
-        myActionBar.setTitle("Welcome 'registar Name goes here' ");
+        myActionBar.setTitle("Block Vote - Registrar");
+        myActionBar.setLogo(R.mipmap.ic_launcher);
 
-        //Progress Bar
-        /*
-        View theView = (View) findViewById(R.id.progressBarMain);
-        ProgressBar pb = (ProgressBar) theView.findViewById(R.id.progressBar);
+        Spannable text = new SpannableString(myActionBar.getTitle());
+        text.setSpan(new ForegroundColorSpan(Color.WHITE), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        myActionBar.setTitle(text);
 
-        pb.setProgress(80);
-        pb.setScaleY(2f);
-        */
+        //TODO remove, testing shared prefs on each start up
+        dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
+        SharedPreferences.Editor editor = dataStore.edit();
+        editor.clear();
+        editor.commit();
+
 
 
         TabHost host = (TabHost)findViewById(R.id.main_tab_menu);
@@ -79,60 +99,9 @@ public class MainActivity extends AppCompatActivity {
         host.addTab(spec);
 
         incompleteList = (ListView) findViewById(R.id.list_incomplete);
-
-
-        //TODO testing delete after
-        String[] values = new String[] { "Android List View",
-                "Adapter implementation",
-                "Simple List View In Android",
-                "Create List View Android",
-                "Android Example",
-                "List View Source Code",
-                "List View Array Adapter",
-                "Android Example List View",
-                "1",
-                "2",
-                "3",
-                "4",
-                "5",
-                "6",
-                "7",
-                "8"
-        };
-
-        // Define a new Adapter
-        // First parameter - Context
-        // Second parameter - Layout for the row
-        // Third parameter - ID of the TextView to which the data is written
-        // Forth - the Array of data
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, values);
-
-        // Assign adapter to ListView
-        incompleteList.setAdapter(adapter);
-
-        // ListView Item Click Listener
-        incompleteList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
-                // ListView Clicked item index
-                int itemPosition     = position;
-
-                // ListView Clicked item value
-                String  itemValue    = (String) incompleteList.getItemAtPosition(position);
-
-                // Show Alert
-                Toast.makeText(getApplicationContext(),
-                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
-                        .show();
-
-            }
-
-        });
+        completedList = (ListView) findViewById(R.id.list_completed);
+        incompleteVoterIDs = new LinkedList<String>();
+        completedVoterIDs = new LinkedList<String>();
 
 
         dataStore = getPreferences(MODE_PRIVATE);
@@ -164,7 +133,100 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Incomplete list
+        dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
+        SharedPreferences.Editor editor = dataStore.edit();
 
+        Gson gson = new Gson();
+
+        String json = dataStore.getString("SavedQRCodeList", "");
+        if(json==null){
+            Log.e("ERROR", "ERROR json is null");
+        }
+
+        Type type = new TypeToken<List<SavedQRCode>>(){}.getType();
+        savedQRcodeList = gson.fromJson(json, type);
+
+        incompleteVoterIDs.clear();
+        completedVoterIDs.clear();
+
+        if (savedQRcodeList != null)
+        {
+            for (SavedQRCode QRcode : savedQRcodeList) {
+                if(QRcode.completed == true){
+                    completedVoterIDs.add(QRcode.voterID);
+                }
+                else{
+                    incompleteVoterIDs.add(QRcode.voterID);
+                }
+            }
+        }
+
+
+        ArrayAdapter<String> adapterIncomplete = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, incompleteVoterIDs);
+
+        // Assign adapter to ListView
+        incompleteList.setAdapter(adapterIncomplete);
+
+        // ListView Item Click Listener
+        incompleteList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                // ListView Clicked item index
+                int itemPosition     = position;
+
+                // ListView Clicked item value
+                String  itemValue    = (String) incompleteList.getItemAtPosition(position);
+
+                // Show Alert
+                Toast.makeText(getApplicationContext(),
+                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
+                        .show();
+
+                viewQRCode(itemValue, false);
+            }
+        });
+
+
+        ArrayAdapter<String> adapterCompleted = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, completedVoterIDs);
+
+        // Assign adapter to ListView
+        completedList.setAdapter(adapterCompleted);
+
+        // ListView Item Click Listener
+        completedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                // ListView Clicked item index
+                int itemPosition     = position;
+
+                // ListView Clicked item value
+                String  itemValue    = (String) completedList.getItemAtPosition(position);
+
+                // Show Alert
+                Toast.makeText(getApplicationContext(),
+                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
+                        .show();
+
+                viewQRCode(itemValue, true);
+            }
+        });
+    }
+
+    private void viewQRCode(String voterID, boolean registrationCompleted){
+        viewQRIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        viewQRIntent.putExtra("ScannedQRCodeBlindedTokenString", "");
+        viewQRIntent.putExtra("savedQRCode", true);
+        viewQRIntent.putExtra("completedRegistration", registrationCompleted);
+        viewQRIntent.putExtra("voterID", Integer.valueOf(voterID));
+        startActivity(viewQRIntent);
     }
 
 
