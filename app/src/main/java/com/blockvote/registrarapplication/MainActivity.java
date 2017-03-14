@@ -12,10 +12,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 import com.blockvote.registrarapplication.qrCode.ReadQRActivity;
 import com.github.lzyzsd.circleprogress.ArcProgress;
@@ -25,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences dataStore;
     private int progress = 0;
+    private ListView incompleteList;
+    private ListView completedList;
 
     private Intent readQRIntent;
 
@@ -72,6 +78,62 @@ public class MainActivity extends AppCompatActivity {
         spec.setIndicator("Completed");
         host.addTab(spec);
 
+        incompleteList = (ListView) findViewById(R.id.list_incomplete);
+
+
+        //TODO testing delete after
+        String[] values = new String[] { "Android List View",
+                "Adapter implementation",
+                "Simple List View In Android",
+                "Create List View Android",
+                "Android Example",
+                "List View Source Code",
+                "List View Array Adapter",
+                "Android Example List View",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8"
+        };
+
+        // Define a new Adapter
+        // First parameter - Context
+        // Second parameter - Layout for the row
+        // Third parameter - ID of the TextView to which the data is written
+        // Forth - the Array of data
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, values);
+
+        // Assign adapter to ListView
+        incompleteList.setAdapter(adapter);
+
+        // ListView Item Click Listener
+        incompleteList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                // ListView Clicked item index
+                int itemPosition     = position;
+
+                // ListView Clicked item value
+                String  itemValue    = (String) incompleteList.getItemAtPosition(position);
+
+                // Show Alert
+                Toast.makeText(getApplicationContext(),
+                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
+                        .show();
+
+            }
+
+        });
+
 
         dataStore = getPreferences(MODE_PRIVATE);
         if (!dataStore.contains("access_token")){
@@ -99,6 +161,10 @@ public class MainActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
+
+
+        //Incomplete list
+
     }
 
 

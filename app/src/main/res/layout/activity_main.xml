@@ -78,10 +78,11 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <TextView
+                    <ListView
+                        android:id="@+id/list_incomplete"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="This is tab 2" />
+                        android:layout_height="wrap_content">
+                    </ListView>
 
                 </LinearLayout>
 
