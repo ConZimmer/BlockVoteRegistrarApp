@@ -181,11 +181,6 @@ public class MainActivity extends AppCompatActivity {
                 // ListView Clicked item value
                 String  itemValue    = (String) incompleteList.getItemAtPosition(position);
 
-                // Show Alert
-                Toast.makeText(getApplicationContext(),
-                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
-                        .show();
-
                 viewQRCode(itemValue, false);
             }
         });
@@ -209,11 +204,6 @@ public class MainActivity extends AppCompatActivity {
 
                 // ListView Clicked item value
                 String  itemValue    = (String) completedList.getItemAtPosition(position);
-
-                // Show Alert
-                Toast.makeText(getApplicationContext(),
-                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
-                        .show();
 
                 viewQRCode(itemValue, true);
             }

@@ -206,6 +206,11 @@ public class GenerateQRActivity extends AppCompatActivity {
                             })
                             .show();
                 }
+                else
+                {
+                    saveQRCode(true);
+                    startActivity(mainMenu);
+                }
             }
         });
 
@@ -226,26 +231,23 @@ public class GenerateQRActivity extends AppCompatActivity {
 
         View rootView = this.findViewById(android.R.id.content);
 
-        if (!savedQRCode)
+        //new voter
+        imageView.setVisibility(View.GONE);
+        findViewById(R.id.textView_show_QR_code).setVisibility(View.GONE);
+        buttonSaveQR.setVisibility(View.GONE);
+        buttonContinue.setVisibility(View.GONE);
+
+        rootView.findViewById(R.id.qrCode_progress).setVisibility(View.VISIBLE);
+        rootView.findViewById(R.id.background_one).setVisibility(View.VISIBLE);
+        rootView.findViewById(R.id.background_two).setVisibility(View.VISIBLE);
+        rootView.findViewById(R.id.textView_generate_QR_code).setVisibility(View.VISIBLE);
+
+
+        if(!savedQRCode)
         {
-            //new voter
-            imageView.setVisibility(View.GONE);
-            findViewById(R.id.textView_show_QR_code).setVisibility(View.GONE);
-            buttonSaveQR.setVisibility(View.GONE);
-            buttonContinue.setVisibility(View.GONE);
-
-            rootView.findViewById(R.id.qrCode_progress).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.background_one).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.background_two).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.textView_generate_QR_code).setVisibility(View.VISIBLE);
-
             registrationProgress.setProgress(50);
 
-
-            //blindedTokenString = getIntent().getStringExtra("ScannedQRCodeBlindedTokenString");
-
-            try
-            {
+            try {
                 tokenRequest = new TokenRequest(Base64.decode(blindedTokenString));
 
                 dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
@@ -253,7 +255,7 @@ public class GenerateQRActivity extends AppCompatActivity {
                 Gson gson = new Gson();
 
                 String json = dataStore.getString("registrar", "");
-                if(json==null){
+                if (json == null) {
                     Log.e("ERROR", "ERROR json is null");
                 }
                 Registrar registrar = gson.fromJson(json, Registrar.class);
@@ -261,44 +263,33 @@ public class GenerateQRActivity extends AppCompatActivity {
                 byte[] temp = registrar.sign(tokenRequest);
 
                 signedToken = Base64.toBase64String(temp);
-            }
-            catch(Exception ex)
-            {
+            } catch (Exception ex) {
                 Log.e("ERROR", "Error reading QR code or signing token");
+
+                //TODO testing saving QR codes without server - delete after and replace with error handling (eg an alert dialog)
+                signedToken = blindedTokenString;
             }
-
-
-            //Generate QR code using AsyncTask
-            new QRGenerator(rootView).execute(signedToken);
-
-            animator.start();
-
         }
         else
         {
 
-            rootView.findViewById(R.id.qrCode_progress).setVisibility(View.GONE);
-            rootView.findViewById(R.id.background_one).setVisibility(View.GONE);
-            rootView.findViewById(R.id.background_two).setVisibility(View.GONE);
-            rootView.findViewById(R.id.textView_generate_QR_code).setVisibility(View.GONE);
-
-            rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.textView_show_QR_code).setVisibility(View.VISIBLE);
-            progressBarView.findViewById(R.id.button_Continue).setVisibility(View.VISIBLE);
+            signedToken = getVoterQRCode(voterID);
 
             if(registrationCompleted)
             {
-                progressBarView.findViewById(R.id.button_Back).setVisibility(View.GONE);
                 registrationProgress.setProgress(100);
             }
             else
             {
-                progressBarView.findViewById(R.id.button_Back).setVisibility(View.VISIBLE);
-                registrationProgress.setProgress(75);
+                registrationProgress.setProgress(50);
             }
-
-
         }
+
+
+        //Generate QR code using AsyncTask
+        new QRGenerator(rootView).execute(signedToken);
+
+        animator.start();
 
     }
 
@@ -322,6 +313,8 @@ public class GenerateQRActivity extends AppCompatActivity {
 
     }
 
+
+
     private void saveQRCode(boolean registrationCompleted){
         dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
         SharedPreferences.Editor editor = dataStore.edit();
@@ -343,19 +336,34 @@ public class GenerateQRActivity extends AppCompatActivity {
 
         SavedQRCode newCode = new SavedQRCode();
         newCode.completed = registrationCompleted;
-
-        //TODO testing, reset to signedToken
-        //newCode.QRCode = signedToken;
-        newCode.QRCode = blindedTokenString;
-
-
+        newCode.QRCode = signedToken;
         newCode.voterID = Integer.toString(voterID);
 
+
+        /*
         for (SavedQRCode QRcode : savedQRcodeList) {
             if(QRcode.voterID.equals(newCode.voterID)){
                 savedQRcodeList.remove(QRcode);
             }
         }
+        */
+
+        int index;
+        boolean duplicate = false;
+
+        for (index = 0; index < savedQRcodeList.size(); index++)
+        {
+            if(savedQRcodeList.get(index).voterID.equals(newCode.voterID)){
+                duplicate = true;
+                break;
+            }
+        }
+
+        if (duplicate) {
+            savedQRcodeList.remove(index);
+        }
+
+
 
         savedQRcodeList.add(newCode);
 
@@ -364,6 +372,36 @@ public class GenerateQRActivity extends AppCompatActivity {
 
         editor.putString("SavedQRCodeList", json);
         editor.commit();
+    }
+
+    private String getVoterQRCode(int voter){
+        dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
+        SharedPreferences.Editor editor = dataStore.edit();
+
+        Gson gson = new Gson();
+
+        String json = dataStore.getString("SavedQRCodeList", "");
+        if(json==null){
+            Log.e("ERROR", "ERROR json is null");
+        }
+
+        Type type = new TypeToken<List<SavedQRCode>>(){}.getType();
+        savedQRcodeList = gson.fromJson(json, type);
+
+        if (savedQRcodeList == null)
+        {
+            //TODO
+            return "LIST EMPTY";
+        }
+
+        for (SavedQRCode QRcode : savedQRcodeList) {
+            if(QRcode.voterID.equals(Integer.toString(voter))){
+                return QRcode.QRCode;
+            }
+        }
+
+        //TODO
+        return "NOT FOUND";
     }
 
 
@@ -408,19 +446,48 @@ public class GenerateQRActivity extends AppCompatActivity {
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
-                    rootView.findViewById(R.id.image_QRCode).startAnimation(fadeIn);
 
-                    rootView.findViewById(R.id.textView_show_QR_code).setVisibility(View.VISIBLE);
-                    rootView.findViewById(R.id.textView_show_QR_code).startAnimation(fadeIn);
+                    // Testing proper saving of QR code values
+                    Toast.makeText(getApplicationContext(),
+                            "QR code is :" + signedToken, Toast.LENGTH_LONG)
+                            .show();
 
-                    progressBarView.findViewById(R.id.button_Continue).setVisibility(View.VISIBLE);
-                    progressBarView.findViewById(R.id.button_Continue).startAnimation(fadeIn);
-                    progressBarView.findViewById(R.id.button_Back).setVisibility(View.VISIBLE);
-                    progressBarView.findViewById(R.id.button_Back).startAnimation(fadeIn);
+                    if(!savedQRCode)
+                    {
+                        rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
+                        rootView.findViewById(R.id.image_QRCode).startAnimation(fadeIn);
 
-                    registrationProgress.setProgress(75);
+                        rootView.findViewById(R.id.textView_show_QR_code).setVisibility(View.VISIBLE);
+                        rootView.findViewById(R.id.textView_show_QR_code).startAnimation(fadeIn);
 
+                        progressBarView.findViewById(R.id.button_Continue).setVisibility(View.VISIBLE);
+                        progressBarView.findViewById(R.id.button_Continue).startAnimation(fadeIn);
+                        progressBarView.findViewById(R.id.button_Back).setVisibility(View.VISIBLE);
+                        progressBarView.findViewById(R.id.button_Back).startAnimation(fadeIn);
+
+                        registrationProgress.setProgress(75);
+                    }
+                    else
+                    {
+                        rootView.findViewById(R.id.image_QRCode).setVisibility(View.VISIBLE);
+                        rootView.findViewById(R.id.image_QRCode).startAnimation(fadeIn);
+                        rootView.findViewById(R.id.textView_show_QR_code).setVisibility(View.VISIBLE);
+                        rootView.findViewById(R.id.textView_show_QR_code).startAnimation(fadeIn);
+                        progressBarView.findViewById(R.id.button_Continue).setVisibility(View.VISIBLE);
+                        progressBarView.findViewById(R.id.button_Continue).startAnimation(fadeIn);
+
+                        if(registrationCompleted)
+                        {
+                            progressBarView.findViewById(R.id.button_Back).setVisibility(View.GONE);
+                            registrationProgress.setProgress(100);
+                        }
+                        else
+                        {
+                            progressBarView.findViewById(R.id.button_Back).setVisibility(View.VISIBLE);
+                            progressBarView.findViewById(R.id.button_Back).startAnimation(fadeIn);
+                            registrationProgress.setProgress(75);
+                        }
+                    }
                 }
 
                 @Override
