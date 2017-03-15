@@ -151,49 +151,61 @@ public class GenerateQRActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                //TODO wrtie to block chain
-                /*
-                BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
-                BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
-                //TODO registar name is still hard coded
-                Call<RegisterVoterModel> call = apiService.registerVoter("US", Integer.toString(voterID), "david");
+                if(!registrationCompleted) {
 
-                call.enqueue(new Callback<RegisterVoterModel>() {
-                    @Override
-                    public void onResponse(Call<RegisterVoterModel> call, Response<RegisterVoterModel> response) {
-                        int statusCode = response.code();
+                    //TODO wrtie to block chain
+                    /*
+                    BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
+                    BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
+                    //TODO registar name is still hard coded
+                    Call<RegisterVoterModel> call = apiService.registerVoter("US", Integer.toString(voterID), "david");
 
-                        if(response.body().getResponse() != null) {
-                            String serverResponse = response.body().getResponse().getResult();
+                    call.enqueue(new Callback<RegisterVoterModel>() {
+                        @Override
+                        public void onResponse(Call<RegisterVoterModel> call, Response<RegisterVoterModel> response) {
+                            int statusCode = response.code();
 
-                            Log.d("LOG INFO", "Registered voter... Result: " + serverResponse);
-                            Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
+                            if(response.body().getResponse() != null) {
+                                String serverResponse = response.body().getResponse().getResult();
 
-                            saveQRCode(true);
-                            startActivity(mainMenu);
+                                Log.d("LOG INFO", "Registered voter... Result: " + serverResponse);
+                                Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
+
+                                //TODO move progress bar and alert dialog here
+                            }
+                            else
+                            {
+                                Log.e("ERROR", "registering voter failed...");
+                                Toast.makeText(getApplicationContext(), "Already registered", Toast.LENGTH_SHORT).show();
+                                //TODO: fail because already registered
+                            }
+
                         }
-                        else
-                        {
-                            Log.e("ERROR", "registering voter failed...");
-                            Toast.makeText(getApplicationContext(), "Already registered", Toast.LENGTH_SHORT).show();
-                            //TODO: fail because already registered
+
+                        @Override
+                        public void onFailure(Call<RegisterVoterModel> call, Throwable t) {
+                            Log.e("ERROR", "ERROR");
+                            Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
+                            //throw new RuntimeException("Could not register voter");
+
                         }
+                    });
+                    */
 
-                    }
 
-                    @Override
-                    public void onFailure(Call<RegisterVoterModel> call, Throwable t) {
-                        Log.e("ERROR", "ERROR");
-                        Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
-                        //throw new RuntimeException("Could not register voter");
-
-                    }
-                });
-                */
-
-                //TODO delete once server call enabled
-                saveQRCode(true);
-                startActivity(mainMenu);
+                    //TODO move progress bar and alert dialog to above location
+                    registrationProgress.setProgress(100);
+                    new AlertDialog.Builder(GenerateQRActivity.this)
+                            .setMessage("Voter registration completed")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    saveQRCode(true);
+                                    startActivity(mainMenu);
+                                }
+                            })
+                            .show();
+                }
             }
         });
 
