@@ -21,6 +21,9 @@ import android.widget.ImageView;
 
 import com.blockvote.registrarapplication.MainActivity;
 import com.blockvote.registrarapplication.SavedQRCode;
+import com.blockvote.registrarapplication.model.RegisterVoterModel;
+import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
+import com.blockvote.registrarapplication.network.BlockVoteServerInstance;
 import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.google.gson.reflect.TypeToken;
 import com.google.zxing.BarcodeFormat;
@@ -31,6 +34,7 @@ import org.spongycastle.util.encoders.Base64;
 import com.google.gson.Gson;
 import android.content.SharedPreferences;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.blockvote.registrarapplication.R;
 
@@ -40,6 +44,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class GenerateQRActivity extends AppCompatActivity {
 
@@ -142,13 +150,49 @@ public class GenerateQRActivity extends AppCompatActivity {
         buttonContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 //TODO wrtie to block chain
+                /*
+                BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
+                BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
+                //TODO registar name is still hard coded
+                Call<RegisterVoterModel> call = apiService.registerVoter("US", Integer.toString(voterID), "david");
 
+                call.enqueue(new Callback<RegisterVoterModel>() {
+                    @Override
+                    public void onResponse(Call<RegisterVoterModel> call, Response<RegisterVoterModel> response) {
+                        int statusCode = response.code();
 
-                //TODO save QR code
+                        if(response.body().getResponse() != null) {
+                            String serverResponse = response.body().getResponse().getResult();
+
+                            Log.d("LOG INFO", "Registered voter... Result: " + serverResponse);
+                            Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
+
+                            saveQRCode(true);
+                            startActivity(mainMenu);
+                        }
+                        else
+                        {
+                            Log.e("ERROR", "registering voter failed...");
+                            Toast.makeText(getApplicationContext(), "Already registered", Toast.LENGTH_SHORT).show();
+                            //TODO: fail because already registered
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<RegisterVoterModel> call, Throwable t) {
+                        Log.e("ERROR", "ERROR");
+                        Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
+                        //throw new RuntimeException("Could not register voter");
+
+                    }
+                });
+                */
+
+                //TODO delete once server call enabled
                 saveQRCode(true);
-
-
                 startActivity(mainMenu);
             }
         });

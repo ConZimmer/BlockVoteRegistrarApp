@@ -209,52 +209,9 @@ public class ReadQRActivity extends AppCompatActivity {
             }
         }
 
-
-
         i_voterID = Integer.parseInt(govID);
-
         Log.d("LOG INFO", "GOV ID: " + govID );
-
         return true;
-        /* TODO uncomment
-        BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
-        BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
-        Call<RegisterVoterModel> call = apiService.registerVoter("US", govID, "david");
-
-        call.enqueue(new Callback<RegisterVoterModel>() {
-            @Override
-            public void onResponse(Call<RegisterVoterModel> call, Response<RegisterVoterModel> response) {
-                int statusCode = response.code();
-
-                if(response.body().getResponse() != null) {
-                    String serverResponse = response.body().getResponse().getResult();
-
-                    Log.d("LOG INFO", "Registered voter... Result: " + serverResponse);
-                    Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
-                    integrator.initiateScan();
-                }
-                else
-                {
-                    Log.e("ERROR", "registering voter failed...");
-                    Toast.makeText(getApplicationContext(), "Already registered", Toast.LENGTH_SHORT).show();
-                    //TODO: fail because already registered
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<RegisterVoterModel> call, Throwable t) {
-                Log.e("ERROR", "ERROR");
-                Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
-                //throw new RuntimeException("Could not register voter");
-
-            }
-        });
-
-
-        return false;
-
-        */
     }
 
 }
