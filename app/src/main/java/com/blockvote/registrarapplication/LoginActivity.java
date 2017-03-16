@@ -44,7 +44,8 @@ public class LoginActivity extends Activity {
                 .build(this);
         startActivity(mLock.newIntent(this));
 
-        lockIntent = new Intent(this, ReadQRActivity.class);
+        lockIntent = new Intent(this, MainActivity.class);
+        lockIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     }
 
     @Override

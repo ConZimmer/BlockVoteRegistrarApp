@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     List<SavedQRCode> savedQRcodeList;
     LinkedList<String> incompleteVoterIDs;
     LinkedList<String> completedVoterIDs;
+    private Intent loginIntent;
     private Intent readQRIntent;
     private Intent viewQRIntent;
 
@@ -58,6 +59,11 @@ public class MainActivity extends AppCompatActivity {
 
         viewQRIntent = new Intent(this, GenerateQRActivity.class);
         viewQRIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
+        loginIntent = new Intent(this, LoginActivity.class);
+        loginIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
+        startActivity(loginIntent);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(myToolbar);
@@ -130,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
+
+        //TODO check if login credentials are still valid, if not, start login activity
 
 
         //Incomplete list
