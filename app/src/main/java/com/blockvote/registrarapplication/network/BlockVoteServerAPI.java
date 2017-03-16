@@ -11,6 +11,7 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Headers;
 
@@ -35,5 +36,5 @@ public interface BlockVoteServerAPI {
     @FormUrlEncoded
     @POST("registerVoter/")
     Call<RegisterVoterModel> registerVoter(@Field("region") String region, @Field("govID") String govID,
-                                    @Field("registrarName") String registrarName);
+                                           @Field("registrarName") String registrarName, @Header("Authorization") String authorization);
 }

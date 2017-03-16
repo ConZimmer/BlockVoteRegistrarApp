@@ -70,6 +70,8 @@ public class GenerateQRActivity extends AppCompatActivity {
     private boolean registrationCompleted;
     private int voterID;
     List<SavedQRCode> savedQRcodeList;
+    private Registrar registrar;
+    private String authorization;
 
     GenerateQRActivity generateQRActivity;
 
@@ -154,19 +156,28 @@ public class GenerateQRActivity extends AppCompatActivity {
                 if(!registrationCompleted) {
 
                     //TODO wrtie to block chain
-                    /*
+
                     BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
                     BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
+
+
                     //TODO registar name is still hard coded
-                    Call<RegisterVoterModel> call = apiService.registerVoter("US", Integer.toString(voterID), "david");
+                    Call<RegisterVoterModel> call = apiService.registerVoter("US", Integer.toString(voterID), registrar.name, authorization);
+
 
                     call.enqueue(new Callback<RegisterVoterModel>() {
                         @Override
                         public void onResponse(Call<RegisterVoterModel> call, Response<RegisterVoterModel> response) {
                             int statusCode = response.code();
 
+                            //TODO: If we get code 200 the registration worked
+                            //400 or 500 the error
+                            //401 login is incorrect
+                            //when you get 401 you need to relogin
+                            String serverResponse;
+
                             if(response.body().getResponse() != null) {
-                                String serverResponse = response.body().getResponse().getResult();
+                                serverResponse = response.body().getResponse().getResult();
 
                                 Log.d("LOG INFO", "Registered voter... Result: " + serverResponse);
                                 Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
@@ -175,9 +186,13 @@ public class GenerateQRActivity extends AppCompatActivity {
                             }
                             else
                             {
+                                serverResponse = response.body().getError().getMessage();
+
                                 Log.e("ERROR", "registering voter failed...");
-                                Toast.makeText(getApplicationContext(), "Already registered", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), serverResponse, Toast.LENGTH_SHORT).show();
                                 //TODO: fail because already registered
+
+                                //TODO: dont complete when there was a failure
                             }
 
                         }
@@ -190,7 +205,7 @@ public class GenerateQRActivity extends AppCompatActivity {
 
                         }
                     });
-                    */
+
 
 
                     //TODO move progress bar and alert dialog to above location
@@ -255,10 +270,14 @@ public class GenerateQRActivity extends AppCompatActivity {
                 Gson gson = new Gson();
 
                 String json = dataStore.getString("registrar", "");
+                String idToken = dataStore.getString("id_token","");
+
+                authorization = "Bearer " + idToken;
+
                 if (json == null) {
                     Log.e("ERROR", "ERROR json is null");
                 }
-                Registrar registrar = gson.fromJson(json, Registrar.class);
+                registrar = gson.fromJson(json, Registrar.class);
 
                 byte[] temp = registrar.sign(tokenRequest);
 

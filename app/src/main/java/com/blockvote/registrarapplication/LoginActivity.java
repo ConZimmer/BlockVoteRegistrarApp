@@ -75,9 +75,10 @@ public class LoginActivity extends Activity {
                             BigInteger publicKeyExponent = new BigInteger(Base64.decode(payload.getUserMetadata().get("publicKeyExponent").toString()));
                             BigInteger privateKeyModulus = new BigInteger(Base64.decode(payload.getUserMetadata().get("privateKeyModulus").toString()));
                             BigInteger privateKeyExponent = new BigInteger(Base64.decode(payload.getUserMetadata().get("privateKeyExponent").toString()));
+                            String registrarName = payload.getUserMetadata().get("name").toString();
 
                             Gson gson = new Gson();
-                            Registrar registrarInput = new Registrar(publicKeyModulus, publicKeyExponent, privateKeyModulus, privateKeyExponent);
+                            Registrar registrarInput = new Registrar(publicKeyModulus, publicKeyExponent, privateKeyModulus, privateKeyExponent, registrarName);
                             String json = gson.toJson(registrarInput);
                             editor.putString("registrar", json);
                             editor.commit();
