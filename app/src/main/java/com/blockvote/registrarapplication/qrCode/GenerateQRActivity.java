@@ -72,6 +72,7 @@ public class GenerateQRActivity extends AppCompatActivity {
     List<SavedQRCode> savedQRcodeList;
     private Registrar registrar;
     private String authorization;
+    private boolean generatingQRcode;
 
     GenerateQRActivity generateQRActivity;
 
@@ -87,6 +88,7 @@ public class GenerateQRActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_generate_qr);
         generateQRActivity = this;
+        generatingQRcode = false;
         processExtraData();
 
         mainMenu = new Intent(this, MainActivity.class);
@@ -176,6 +178,12 @@ public class GenerateQRActivity extends AppCompatActivity {
                             //when you get 401 you need to relogin
                             String serverResponse;
 
+
+                            if(response == null || response.body() == null){
+                                //TODO handle this error state
+                                return;
+                            }
+
                             if(response.body().getResponse() != null) {
                                 serverResponse = response.body().getResponse().getResult();
 
@@ -244,72 +252,82 @@ public class GenerateQRActivity extends AppCompatActivity {
         //savedQRCode = getIntent().getBooleanExtra("savedQRCode",false);
         //voterID = getIntent().getIntExtra("voterID",0);
 
-        View rootView = this.findViewById(android.R.id.content);
+        if(!generatingQRcode) {
+            View rootView = this.findViewById(android.R.id.content);
 
-        //new voter
-        imageView.setVisibility(View.GONE);
-        findViewById(R.id.textView_show_QR_code).setVisibility(View.GONE);
-        buttonSaveQR.setVisibility(View.GONE);
-        buttonContinue.setVisibility(View.GONE);
+            //new voter
+            imageView.setVisibility(View.GONE);
+            findViewById(R.id.textView_show_QR_code).setVisibility(View.GONE);
+            buttonSaveQR.setVisibility(View.GONE);
+            buttonContinue.setVisibility(View.GONE);
 
-        rootView.findViewById(R.id.qrCode_progress).setVisibility(View.VISIBLE);
-        rootView.findViewById(R.id.background_one).setVisibility(View.VISIBLE);
-        rootView.findViewById(R.id.background_two).setVisibility(View.VISIBLE);
-        rootView.findViewById(R.id.textView_generate_QR_code).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.qrCode_progress).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.background_one).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.background_two).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.textView_generate_QR_code).setVisibility(View.VISIBLE);
 
 
-        if(!savedQRCode)
-        {
-            registrationProgress.setProgress(50);
-
-            try {
-                tokenRequest = new TokenRequest(Base64.decode(blindedTokenString));
-
-                dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
-
-                Gson gson = new Gson();
-
-                String json = dataStore.getString("registrar", "");
-                String idToken = dataStore.getString("id_token","");
-
-                authorization = "Bearer " + idToken;
-
-                if (json == null) {
-                    Log.e("ERROR", "ERROR json is null");
-                }
-                registrar = gson.fromJson(json, Registrar.class);
-
-                byte[] temp = registrar.sign(tokenRequest);
-
-                signedToken = Base64.toBase64String(temp);
-            } catch (Exception ex) {
-                Log.e("ERROR", "Error reading QR code or signing token");
-
-                //TODO testing saving QR codes without server - delete after and replace with error handling (eg an alert dialog)
-                signedToken = blindedTokenString;
-            }
-        }
-        else
-        {
-
-            signedToken = getVoterQRCode(voterID);
-
-            if(registrationCompleted)
-            {
-                registrationProgress.setProgress(100);
-            }
-            else
-            {
+            if (!savedQRCode) {
                 registrationProgress.setProgress(50);
+
+                try {
+                    tokenRequest = new TokenRequest(Base64.decode(blindedTokenString));
+
+                    dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
+
+                    Gson gson = new Gson();
+
+                    String json = dataStore.getString("registrar", "");
+                    String idToken = dataStore.getString("id_token", "");
+
+                    authorization = "Bearer " + idToken;
+
+                    if (json == null) {
+                        Log.e("ERROR", "ERROR json is null");
+                    }
+                    registrar = gson.fromJson(json, Registrar.class);
+
+                    byte[] temp = registrar.sign(tokenRequest);
+
+                    signedToken = Base64.toBase64String(temp);
+                } catch (Exception ex) {
+                    Log.e("ERROR", "Error reading QR code or signing token");
+
+                    //TODO testing saving QR codes without server - delete after and replace with error handling (eg an alert dialog)
+                    signedToken = blindedTokenString;
+                }
+            } else {
+
+                signedToken = getVoterQRCode(voterID);
+
+                if (registrationCompleted) {
+                    registrationProgress.setProgress(100);
+                } else {
+                    registrationProgress.setProgress(50);
+                }
             }
+
+
+            //Generate QR code using AsyncTask
+            generatingQRcode = true;
+            new QRGenerator(rootView).execute(signedToken);
+
+            animator.start();
+
         }
 
+    }
 
-        //Generate QR code using AsyncTask
-        new QRGenerator(rootView).execute(signedToken);
+    @Override
+    protected void onPause(){
+        super.onPause();
+        Log.e("====sDEBUG====", "=========================ON PAUSE==========================");
+    }
 
-        animator.start();
-
+    @Override
+    protected void onStop(){
+        super.onStop();
+        Log.e("====sDEBUG====", "=========================ON STOP==========================");
     }
 
     @Override
@@ -465,11 +483,12 @@ public class GenerateQRActivity extends AppCompatActivity {
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-
+/* TODO remove
                     // Testing proper saving of QR code values
                     Toast.makeText(getApplicationContext(),
                             "QR code is :" + signedToken, Toast.LENGTH_LONG)
                             .show();
+*/
 
                     if(!savedQRCode)
                     {
@@ -507,6 +526,8 @@ public class GenerateQRActivity extends AppCompatActivity {
                             registrationProgress.setProgress(75);
                         }
                     }
+
+                    generatingQRcode = false;
                 }
 
                 @Override
