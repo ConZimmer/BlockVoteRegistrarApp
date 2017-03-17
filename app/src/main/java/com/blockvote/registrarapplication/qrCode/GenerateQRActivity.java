@@ -157,13 +157,9 @@ public class GenerateQRActivity extends AppCompatActivity {
 
                 if(!registrationCompleted) {
 
-                    //TODO wrtie to block chain
-
                     BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
                     BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
 
-
-                    //TODO registar name is still hard coded
                     Call<RegisterVoterModel> call = apiService.registerVoter("US", Integer.toString(voterID), registrar.name, authorization);
 
 
@@ -178,10 +174,27 @@ public class GenerateQRActivity extends AppCompatActivity {
                             //when you get 401 you need to relogin
                             String serverResponse;
 
+                            //Unable to get a response from the server
+                            if(response.body() == null){
+                                new AlertDialog.Builder(GenerateQRActivity.this)
+                                        .setMessage("Error communicating with Server. Voter registration not completed.\nPlease contact BlockVote administrators.")
+                                        .setCancelable(false)
+                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                saveQRCode(false);
+                                                startActivity(mainMenu);
+                                            }
+                                        })
+                                        .show();
 
-                            if(response == null || response.body() == null){
-                                //TODO handle this error state
                                 return;
+                            }
+
+                            if (statusCode == 401)
+                            {
+                                //TODO
+                                //idToken has expired, the registrar needs to login again to get new idToken
+
                             }
 
                             if(response.body().getResponse() != null) {
@@ -190,7 +203,17 @@ public class GenerateQRActivity extends AppCompatActivity {
                                 Log.d("LOG INFO", "Registered voter... Result: " + serverResponse);
                                 Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
 
-                                //TODO move progress bar and alert dialog here
+                                registrationProgress.setProgress(100);
+                                new AlertDialog.Builder(GenerateQRActivity.this)
+                                        .setMessage("Voter registration completed")
+                                        .setCancelable(false)
+                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                saveQRCode(true);
+                                                startActivity(mainMenu);
+                                            }
+                                        })
+                                        .show();
                             }
                             else
                             {
@@ -201,6 +224,17 @@ public class GenerateQRActivity extends AppCompatActivity {
                                 //TODO: fail because already registered
 
                                 //TODO: dont complete when there was a failure
+
+                                new AlertDialog.Builder(GenerateQRActivity.this)
+                                        .setMessage("You are registered as a valid registrar. Voter registration not complete.\nPlease contact BlockVote administrators to enroll you.")
+                                        .setCancelable(false)
+                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                saveQRCode(false);
+                                                startActivity(mainMenu);
+                                            }
+                                        })
+                                        .show();
                             }
 
                         }
@@ -214,20 +248,6 @@ public class GenerateQRActivity extends AppCompatActivity {
                         }
                     });
 
-
-
-                    //TODO move progress bar and alert dialog to above location
-                    registrationProgress.setProgress(100);
-                    new AlertDialog.Builder(GenerateQRActivity.this)
-                            .setMessage("Voter registration completed")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    saveQRCode(true);
-                                    startActivity(mainMenu);
-                                }
-                            })
-                            .show();
                 }
                 else
                 {
