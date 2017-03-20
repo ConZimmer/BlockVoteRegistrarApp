@@ -195,38 +195,59 @@ public class GenerateQRActivity extends AppCompatActivity {
                                 //TODO
                                 //idToken has expired, the registrar needs to login again to get new idToken
 
+                                registrationProgress.setProgress(100);
+                                new AlertDialog.Builder(GenerateQRActivity.this)
+                                        .setMessage("You secure idToken has expired. Voter registration not completed.\nPlease re-login.")
+                                        .setCancelable(false)
+                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                saveQRCode(false);
+
+                                                //TODO start login activity not main activity
+                                                startActivity(mainMenu);
+                                            }
+                                        })
+                                        .show();
+
                             }
 
                             if(response.body().getResponse() != null) {
                                 serverResponse = response.body().getResponse().getResult();
 
-                                Log.d("LOG INFO", "Registered voter... Result: " + serverResponse);
-                                Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
 
-                                registrationProgress.setProgress(100);
-                                new AlertDialog.Builder(GenerateQRActivity.this)
-                                        .setMessage("Voter registration completed")
-                                        .setCancelable(false)
-                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                saveQRCode(true);
-                                                startActivity(mainMenu);
-                                            }
-                                        })
-                                        .show();
+                                if (statusCode == 200)
+                                {
+                                    Log.d("LOG INFO", "Registered voter... Result: " + serverResponse);
+                                    Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
+
+                                    registrationProgress.setProgress(100);
+                                    new AlertDialog.Builder(GenerateQRActivity.this)
+                                            .setMessage("Voter registration completed")
+                                            .setCancelable(false)
+                                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    saveQRCode(true);
+                                                    startActivity(mainMenu);
+                                                }
+                                            })
+                                            .show();
+                                }
                             }
                             else
                             {
-                                serverResponse = response.body().getError().getMessage();
-
                                 Log.e("ERROR", "registering voter failed...");
-                                Toast.makeText(getApplicationContext(), serverResponse, Toast.LENGTH_SHORT).show();
-                                //TODO: fail because already registered
+                                Log.e("========DEBUG=======", "========================= Status code is: " + statusCode + " ========================");
 
-                                //TODO: dont complete when there was a failure
+
+                                serverResponse = response.body().getError().getMessage();
+                                Toast.makeText(getApplicationContext(), serverResponse, Toast.LENGTH_SHORT).show();
+
+
+                                //TODO: fail because already registered
+                                //Error code is 200 when already registered
 
                                 new AlertDialog.Builder(GenerateQRActivity.this)
-                                        .setMessage("You are registered as a valid registrar. Voter registration not complete.\nPlease contact BlockVote administrators to enroll you.")
+                                        .setMessage("Voter registration not complete.\n" + serverResponse)
                                         .setCancelable(false)
                                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
@@ -235,6 +256,19 @@ public class GenerateQRActivity extends AppCompatActivity {
                                             }
                                         })
                                         .show();
+
+/*
+                                new AlertDialog.Builder(GenerateQRActivity.this)
+                                        .setMessage("You are not registered as a valid registrar. Voter registration not complete.\nPlease contact BlockVote administrators to enroll you.")
+                                        .setCancelable(false)
+                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                saveQRCode(false);
+                                                startActivity(mainMenu);
+                                            }
+                                        })
+                                        .show();
+*/
                             }
 
                         }
