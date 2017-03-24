@@ -5,6 +5,7 @@ import com.blockvote.registrarapplication.model.AuthorizeResponse;
 import com.blockvote.registrarapplication.model.ElectionListModel;
 import com.blockvote.registrarapplication.model.FullElectionInfoModel;
 import com.blockvote.registrarapplication.model.RegisterVoterModel;
+import com.blockvote.registrarapplication.model.VoterRegRecordModel;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -37,4 +38,8 @@ public interface BlockVoteServerAPI {
     @POST("registerVoter/")
     Call<RegisterVoterModel> registerVoter(@Field("region") String region, @Field("govID") String govID,
                                            @Field("registrarName") String registrarName, @Header("Authorization") String authorization);
+
+    @FormUrlEncoded
+    @POST("VoterRegRecord/")
+    Call<VoterRegRecordModel> voterRegRecord(@Field("region") String region, @Field("govID") String govID);
 }

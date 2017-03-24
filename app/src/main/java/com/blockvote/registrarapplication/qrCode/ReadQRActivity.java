@@ -23,6 +23,7 @@ import com.blockvote.registrarapplication.MainActivity;
 import com.blockvote.registrarapplication.R;
 import com.blockvote.registrarapplication.SavedQRCode;
 import com.blockvote.registrarapplication.model.RegisterVoterModel;
+import com.blockvote.registrarapplication.model.VoterRegRecordModel;
 import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
 import com.blockvote.registrarapplication.network.BlockVoteServerInstance;
 import com.google.gson.Gson;
@@ -47,6 +48,7 @@ public class ReadQRActivity extends AppCompatActivity {
     private View progressBarView;
     private ProgressBar registrationProgress;
     private SharedPreferences dataStore;
+    private String serverResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,18 +83,7 @@ public class ReadQRActivity extends AppCompatActivity {
                 integrator.setBeepEnabled(false);
                 integrator.setBarcodeImageEnabled(false);
 
-                if (registerVoter()) {
-                    integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
-                    integrator.setPrompt("Scan");
-                    integrator.setCameraId(0);
-                    integrator.setBeepEnabled(false);
-                    integrator.setBarcodeImageEnabled(false);
-                    integrator.initiateScan();
-                }
-                else
-                {
-
-                }
+                registerVoter();
             }
         });
 
@@ -167,6 +158,7 @@ public class ReadQRActivity extends AppCompatActivity {
         if(voterID != null){
             govID = voterID.getText().toString();
         }
+
         if (govID == null || govID.equals("") )
         {
             new AlertDialog.Builder(this)
@@ -208,6 +200,90 @@ public class ReadQRActivity extends AppCompatActivity {
                 }
             }
         }
+
+
+        BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
+        BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
+
+        Call<VoterRegRecordModel> call = apiService.voterRegRecord("US", govID);
+
+
+        call.enqueue(new Callback<VoterRegRecordModel>() {
+            @Override
+            public void onResponse(Call<VoterRegRecordModel> call, Response<VoterRegRecordModel> response) {
+                int statusCode = response.code();
+
+                //Unable to get a response from the server
+                if(response.body() == null){
+                    new AlertDialog.Builder(ReadQRActivity.this)
+                            .setMessage("Error communicating with Server. Voter registration not completed.\nPlease contact BlockVote administrators.")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            })
+                            .show();
+
+                    return;
+                }
+
+                if(response.body().getResponse() != null) {
+
+                    serverResponse = response.body().getResponse();
+
+                    new AlertDialog.Builder(ReadQRActivity.this)
+                            .setMessage("WARNING:\nVoter has already registered.\nPreventing Registration.")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            })
+                            .show();
+
+                    return;
+                }
+                else
+                {
+                    serverResponse = response.body().getError().getMessage();
+
+                    //TODO: very poor way of checking, just a temp quick solution,
+                    if (serverResponse.toLowerCase().contains("voter with govID".toLowerCase()))
+                    {
+                        integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+                        integrator.setPrompt("Scan");
+                        integrator.setCameraId(0);
+                        integrator.setBeepEnabled(false);
+                        integrator.setBarcodeImageEnabled(false);
+                        integrator.initiateScan();
+                    }
+                    else
+                    {
+
+                        new AlertDialog.Builder(ReadQRActivity.this)
+                                .setMessage("Please try again...")
+                                .setCancelable(false)
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                    }
+                                })
+                                .show();
+                    }
+
+                    return;
+                }
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<VoterRegRecordModel> call, Throwable t) {
+                Log.e("ERROR", "ERROR on VoterRegRecordModel");
+
+                Toast.makeText(getApplicationContext(), "Error on VoterRegRecordModel", Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         i_voterID = Integer.parseInt(govID);
         Log.d("LOG INFO", "GOV ID: " + govID );
