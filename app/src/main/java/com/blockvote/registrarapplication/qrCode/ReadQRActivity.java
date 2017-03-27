@@ -1,17 +1,13 @@
 package com.blockvote.registrarapplication.qrCode;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +18,6 @@ import android.widget.Toast;
 import com.blockvote.registrarapplication.MainActivity;
 import com.blockvote.registrarapplication.R;
 import com.blockvote.registrarapplication.SavedQRCode;
-import com.blockvote.registrarapplication.model.RegisterVoterModel;
 import com.blockvote.registrarapplication.model.VoterRegRecordModel;
 import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
 import com.blockvote.registrarapplication.network.BlockVoteServerInstance;
@@ -32,7 +27,6 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.lang.reflect.Type;
-import java.util.LinkedList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -49,6 +43,10 @@ public class ReadQRActivity extends AppCompatActivity {
     private ProgressBar registrationProgress;
     private SharedPreferences dataStore;
     private String serverResponse;
+    Button continueButton;
+    Button backButton;
+    ProgressBar verifyVoterProgressBar;
+    EditText voterIDEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +65,21 @@ public class ReadQRActivity extends AppCompatActivity {
         textView.setText("Verify voters identity and enter their 'voter ID'");
 
         View progressMenu = findViewById(R.id.progressBarEnterID);
-        Button readQRButton = (Button)progressMenu.findViewById(R.id.button_Continue);
-        Button backButton = (Button)progressMenu.findViewById(R.id.button_Back);
+        continueButton = (Button)progressMenu.findViewById(R.id.button_Continue);
+        backButton = (Button)progressMenu.findViewById(R.id.button_Back);
+        verifyVoterProgressBar = (ProgressBar)findViewById(R.id.progressBarVerifyVoter);
+        voterIDEditText = (EditText)findViewById(R.id.editTextVoterID);
+
 
         final Activity activity = this;
-        readQRButton.setOnClickListener(new View.OnClickListener() {
+        continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                continueButton.setVisibility(View.GONE);
+                backButton.setVisibility(View.GONE);
+                voterIDEditText.setVisibility(View.GONE);
+                verifyVoterProgressBar.setVisibility(View.VISIBLE);
 
                 integrator = new IntentIntegrator(activity);
 
@@ -166,6 +172,10 @@ public class ReadQRActivity extends AppCompatActivity {
                     .setCancelable(false)
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            continueButton.setVisibility(View.VISIBLE);
+                            backButton.setVisibility(View.VISIBLE);
+                            voterIDEditText.setVisibility(View.VISIBLE);
+                            verifyVoterProgressBar.setVisibility(View.GONE);
                         }
                     })
                     .show();
@@ -193,6 +203,10 @@ public class ReadQRActivity extends AppCompatActivity {
                             .setCancelable(false)
                             .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
+                                    continueButton.setVisibility(View.VISIBLE);
+                                    backButton.setVisibility(View.VISIBLE);
+                                    voterIDEditText.setVisibility(View.VISIBLE);
+                                    verifyVoterProgressBar.setVisibility(View.GONE);
                                 }
                             })
                             .show();
@@ -212,6 +226,11 @@ public class ReadQRActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<VoterRegRecordModel> call, Response<VoterRegRecordModel> response) {
                 int statusCode = response.code();
+
+                continueButton.setVisibility(View.VISIBLE);
+                backButton.setVisibility(View.VISIBLE);
+                voterIDEditText.setVisibility(View.VISIBLE);
+                verifyVoterProgressBar.setVisibility(View.GONE);
 
                 //Unable to get a response from the server
                 if(response.body() == null){

@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,6 +18,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.blockvote.registrarapplication.LoginActivity;
 import com.blockvote.registrarapplication.MainActivity;
 import com.blockvote.registrarapplication.SavedQRCode;
 import com.blockvote.registrarapplication.model.RegisterVoterModel;
@@ -41,7 +41,6 @@ import com.blockvote.registrarapplication.R;
 import com.blockvote.registrarapplication.crypto.*;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -65,6 +64,7 @@ public class GenerateQRActivity extends AppCompatActivity {
     private int ScreenWidth;
     private ProgressBar registrationProgress;
     private Intent mainMenu;
+    private Intent loginActivity;
     private Button buttonContinue, buttonSaveQR;
     private boolean savedQRCode;
     private boolean registrationCompleted;
@@ -73,6 +73,7 @@ public class GenerateQRActivity extends AppCompatActivity {
     private Registrar registrar;
     private String authorization;
     private boolean generatingQRcode;
+    ProgressBar progressRegisterVoter;
 
     GenerateQRActivity generateQRActivity;
 
@@ -91,8 +92,13 @@ public class GenerateQRActivity extends AppCompatActivity {
         generatingQRcode = false;
         processExtraData();
 
+        progressRegisterVoter = (ProgressBar) findViewById(R.id.progressBarRegisterVoter);
+
         mainMenu = new Intent(this, MainActivity.class);
         mainMenu.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
+        loginActivity = new Intent(this, LoginActivity.class);
+        loginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
         imageView = (ImageView)findViewById(R.id.image_QRCode);
 
@@ -157,6 +163,10 @@ public class GenerateQRActivity extends AppCompatActivity {
 
                 if(!registrationCompleted) {
 
+                    buttonSaveQR.setVisibility(View.GONE);
+                    buttonContinue.setVisibility(View.GONE);
+                    progressRegisterVoter.setVisibility(View.VISIBLE);
+
                     BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
                     BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
 
@@ -167,6 +177,10 @@ public class GenerateQRActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<RegisterVoterModel> call, Response<RegisterVoterModel> response) {
                             int statusCode = response.code();
+
+                            buttonSaveQR.setVisibility(View.VISIBLE);
+                            buttonContinue.setVisibility(View.VISIBLE);
+                            progressRegisterVoter.setVisibility(View.GONE);
 
                             //TODO: If we get code 200 the registration worked
                             //400 or 500 the error
@@ -204,7 +218,7 @@ public class GenerateQRActivity extends AppCompatActivity {
                                                 saveQRCode(false);
 
                                                 //TODO start login activity not main activity
-                                                startActivity(mainMenu);
+                                                startActivity(loginActivity);
                                             }
                                         })
                                         .show();
@@ -218,7 +232,7 @@ public class GenerateQRActivity extends AppCompatActivity {
                                 if (statusCode == 200)
                                 {
                                     Log.d("LOG INFO", "Registered voter... Result: " + serverResponse);
-                                    Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
 
                                     registrationProgress.setProgress(100);
                                     new AlertDialog.Builder(GenerateQRActivity.this)
