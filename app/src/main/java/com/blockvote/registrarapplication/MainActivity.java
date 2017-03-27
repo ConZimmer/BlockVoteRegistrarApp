@@ -15,6 +15,9 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -75,13 +78,6 @@ public class MainActivity extends AppCompatActivity {
         text.setSpan(new ForegroundColorSpan(Color.WHITE), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         myActionBar.setTitle(text);
 
-        //TODO remove, testing shared prefs on each start up
-        dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
-        SharedPreferences.Editor editor = dataStore.edit();
-        editor.clear();
-        editor.commit();
-
-
 
         TabHost host = (TabHost)findViewById(R.id.main_tab_menu);
         host.setup();
@@ -126,6 +122,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        SharedPreferences.Editor editor;
+
+        switch (item.getItemId()) {
+            case R.id.Main_Option_LogOut:
+                dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
+                editor = dataStore.edit();
+                editor.clear();
+                editor.commit();
+
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.Main_Option_ClearAllVoterData:
+                dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
+                editor = dataStore.edit();
+                editor.clear();
+                editor.commit();
+
+                this.onResume();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
