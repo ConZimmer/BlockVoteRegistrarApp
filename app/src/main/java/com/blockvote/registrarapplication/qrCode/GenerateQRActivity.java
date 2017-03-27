@@ -621,7 +621,7 @@ public class GenerateQRActivity extends AppCompatActivity {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            Log.v(LOG_TAG, "Progress Update" + values[0]);
+            //Log.v(LOG_TAG, "Progress Update" + values[0]);
             pb.setProgress(values[0]);
         }
 

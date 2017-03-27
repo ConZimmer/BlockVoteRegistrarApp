@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -19,6 +20,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -36,6 +39,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -77,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
         Spannable text = new SpannableString(myActionBar.getTitle());
         text.setSpan(new ForegroundColorSpan(Color.WHITE), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         myActionBar.setTitle(text);
+
+        setOverflowButtonColor(this, Color.WHITE);
 
 
         TabHost host = (TabHost)findViewById(R.id.main_tab_menu);
@@ -166,9 +172,9 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         // Hide the status bar.
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
+        //View decorView = getWindow().getDecorView();
+        //int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        //decorView.setSystemUiVisibility(uiOptions);
 
         //TODO check if login credentials are still valid, if not, start login activity
 
@@ -276,12 +282,30 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Hide the status bar.
-                        View decorView = getWindow().getDecorView();
-                        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-                        decorView.setSystemUiVisibility(uiOptions);
+                        //View decorView = getWindow().getDecorView();
+                        //int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+                        //decorView.setSystemUiVisibility(uiOptions);
                     }
                 })
                 .show();
+    }
+
+    private static void setOverflowButtonColor(final Activity activity, final int color) {
+        final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
+        final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+        final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                final ArrayList<View> outViews = new ArrayList<View>();
+                decorView.findViewsWithText(outViews, overflowDescription, View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
+                if (outViews.isEmpty()) {
+                    return;
+                }
+                AppCompatImageView overflow = (AppCompatImageView) outViews.get(0);
+                overflow.setColorFilter(color);
+            }
+        });
     }
 
 }
