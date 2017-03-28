@@ -32,7 +32,7 @@ public class CryptoUnitTest {
         RSAKeyParameters privateKey=(RSAKeyParameters) keys.getPrivate();
 
         //Create registrar object
-        IRegistrar registrar=new Registrar(publicKey.getModulus(), publicKey.getExponent(), privateKey.getModulus(), privateKey.getExponent());
+        IRegistrar registrar=new Registrar(publicKey.getModulus(), publicKey.getExponent(), privateKey.getModulus(), privateKey.getExponent(), "reg1");
 
         // Create a "blinded token" using the registrar's public key. The blinded token
         // contains an internal blinding factor that is used to blind the
@@ -66,14 +66,14 @@ public class CryptoUnitTest {
         RSAKeyParameters privateKey=(RSAKeyParameters) keys.getPrivate();
 
         //Create registrar object
-        IRegistrar registrar1=new Registrar(publicKey.getModulus(), publicKey.getExponent(), privateKey.getModulus(), privateKey.getExponent());
+        IRegistrar registrar1=new Registrar(publicKey.getModulus(), publicKey.getExponent(), privateKey.getModulus(), privateKey.getExponent(), "reg1");
 
         keys = generator.generateKeyPair();
         publicKey=(RSAKeyParameters) keys.getPublic();
         privateKey=(RSAKeyParameters) keys.getPrivate();
 
         //Create registrar object
-        IRegistrar registrar2=new Registrar(publicKey.getModulus(), publicKey.getExponent(), privateKey.getModulus(), privateKey.getExponent());
+        IRegistrar registrar2=new Registrar(publicKey.getModulus(), publicKey.getExponent(), privateKey.getModulus(), privateKey.getExponent(), "reg2");
 
         // Use a different key to genereate the tokens
         BlindedToken blindedToken = new BlindedToken(registrar2.getPublic());
