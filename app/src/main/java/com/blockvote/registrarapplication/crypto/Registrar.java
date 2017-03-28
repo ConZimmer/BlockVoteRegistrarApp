@@ -14,10 +14,12 @@ import com.blockvote.registrarapplication.crypto.ITokenRequest;
 public class Registrar implements IRegistrar{
 	private final RSAKeyParameters publicKey;
 	private final RSAKeyParameters privateKey;
+	public final String name;
 
-	public Registrar(BigInteger publicModulus, BigInteger publicExponent, BigInteger privateModulus, BigInteger privateExponent) {
+	public Registrar(BigInteger publicModulus, BigInteger publicExponent, BigInteger privateModulus, BigInteger privateExponent, String registrarName) {
 		publicKey = new RSAKeyParameters(false, publicModulus, publicExponent);
 		privateKey = new RSAKeyParameters(true, privateModulus, privateExponent);
+		name = registrarName;
 	}
 
 	public RSAKeyParameters getPublic() {

@@ -5,6 +5,7 @@
     android:id="@+id/activity_generate_qr"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context="com.blockvote.registrarapplication.qrCode.GenerateQRActivity">
 
 
@@ -75,7 +76,7 @@
 
     <TextView
         android:id="@+id/textView_show_QR_code"
-        android:textSize="@dimen/large_font"
+        android:textSize="@dimen/extra_large_font"
         android:text="Voter must scan this QR code."
         android:textStyle="bold"
         android:gravity="center"
@@ -99,5 +100,16 @@
         android:layout_height="200dp"
         android:layout_alignParentBottom="true"
         tools:layout="@layout/progress_bar" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyle"
+        android:id="@+id/progressBarRegisterVoter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:layout_alignTop="@+id/progressBarShowQR"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:indeterminate="true" />
 
 </RelativeLayout>

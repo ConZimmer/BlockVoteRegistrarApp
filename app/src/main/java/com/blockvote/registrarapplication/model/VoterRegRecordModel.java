@@ -1,21 +1,21 @@
 package com.blockvote.registrarapplication.model;
 
-import java.util.HashMap;
-import java.util.Map;
+        import java.util.HashMap;
+        import java.util.Map;
 
 
-public class RegisterVoterModel {
+public class VoterRegRecordModel {
 
-    private registerVoter_response response;
+    private String response;
     private ErrorResponseModel error;
     //private Object error;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    public registerVoter_response getResponse() {
+    public String getResponse() {
         return response;
     }
 
-    public void setResponse(registerVoter_response response) {
+    public void setResponse(String response) {
         this.response = response;
     }
 
@@ -27,15 +27,6 @@ public class RegisterVoterModel {
         this.error = error;
     }
 
-    /*
-    public Object getError() {
-        return error;
-    }
-
-    public void setError(Object error) {
-        this.error = error;
-    }
-*/
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }

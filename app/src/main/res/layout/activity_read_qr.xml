@@ -5,18 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.blockvote.registrarapplication.qrCode.ReadQRActivity"
-    android:background="@color/com_auth0_lock_disabled_text">
+    android:background="#ffffff">
 
     <TextView
+        android:id="@+id/readQR_blurb"
         android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/readQR_blurb"
-        android:layout_marginLeft="31dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:textSize="@dimen/larger_font"
         android:layout_alignParentTop="true" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/editTextVoterID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="30sp"
@@ -32,7 +38,7 @@
         android:paddingBottom="@dimen/activity_vertical_margin_quarter"
         android:layout_centerInParent="true"
         android:layout_marginTop="11dp"
-        android:background="#33FFFFFF" />
+        android:background="#11000000" />
 
     <fragment android:name="com.blockvote.registrarapplication.MyProgressBar"
         android:id="@+id/progressBarEnterID"
@@ -40,6 +46,14 @@
         android:layout_height="200dp"
         android:layout_alignParentBottom="true"
         tools:layout="@layout/progress_bar" />
+
+    <ProgressBar
+        android:id="@+id/progressBarVerifyVoter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        android:visibility="gone" />
 
 </RelativeLayout>
 

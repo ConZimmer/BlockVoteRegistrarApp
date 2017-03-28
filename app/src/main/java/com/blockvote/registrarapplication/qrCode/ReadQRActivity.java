@@ -1,28 +1,32 @@
 package com.blockvote.registrarapplication.qrCode;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blockvote.registrarapplication.MainActivity;
 import com.blockvote.registrarapplication.R;
-import com.blockvote.registrarapplication.model.RegisterVoterModel;
+import com.blockvote.registrarapplication.SavedQRCode;
+import com.blockvote.registrarapplication.model.VoterRegRecordModel;
 import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
 import com.blockvote.registrarapplication.network.BlockVoteServerInstance;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import retrofit2.Call;
@@ -31,26 +35,51 @@ import retrofit2.Response;
 
 public class ReadQRActivity extends AppCompatActivity {
 
-    private EditText editText;
-    private String EditTextValue;
+    private EditText voterID;
+    private int i_voterID;
     private IntentIntegrator integrator;
+    private Intent mainMenu;
+    private View progressBarView;
+    private ProgressBar registrationProgress;
+    private SharedPreferences dataStore;
+    private String serverResponse;
+    Button continueButton;
+    Button backButton;
+    ProgressBar verifyVoterProgressBar;
+    EditText voterIDEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_qr);
 
-        editText = (EditText)findViewById(R.id.editText);
+        mainMenu = new Intent(this, MainActivity.class);
+        mainMenu.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
+        progressBarView = (View) findViewById(R.id.progressBarEnterID);
+        registrationProgress = (ProgressBar) progressBarView.findViewById(R.id.progressBar);
+        registrationProgress.setScaleY(2f);
+
+        voterID = (EditText)findViewById(R.id.editTextVoterID);
         TextView textView = (TextView) this.findViewById(R.id.readQR_blurb);
-        textView.setText("Please Verify Persons Identity and enter their 'gov ID' number");
+        textView.setText("Verify voters identity and enter their 'voter ID'");
 
         View progressMenu = findViewById(R.id.progressBarEnterID);
-        Button readQRButton = (Button)progressMenu.findViewById(R.id.button_Continue);
+        continueButton = (Button)progressMenu.findViewById(R.id.button_Continue);
+        backButton = (Button)progressMenu.findViewById(R.id.button_Back);
+        verifyVoterProgressBar = (ProgressBar)findViewById(R.id.progressBarVerifyVoter);
+        voterIDEditText = (EditText)findViewById(R.id.editTextVoterID);
+
 
         final Activity activity = this;
-        readQRButton.setOnClickListener(new View.OnClickListener() {
+        continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                continueButton.setVisibility(View.GONE);
+                backButton.setVisibility(View.GONE);
+                voterIDEditText.setVisibility(View.GONE);
+                verifyVoterProgressBar.setVisibility(View.VISIBLE);
 
                 integrator = new IntentIntegrator(activity);
 
@@ -60,19 +89,14 @@ public class ReadQRActivity extends AppCompatActivity {
                 integrator.setBeepEnabled(false);
                 integrator.setBarcodeImageEnabled(false);
 
-                //TODO uncomment: if (registerVoter()) {
-                if(true){
-                    integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
-                    integrator.setPrompt("Scan");
-                    integrator.setCameraId(0);
-                    integrator.setBeepEnabled(false);
-                    integrator.setBarcodeImageEnabled(false);
-                    integrator.initiateScan();
-                }
-                else
-                {
+                registerVoter();
+            }
+        });
 
-                }
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(mainMenu);
             }
         });
 
@@ -97,6 +121,9 @@ public class ReadQRActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        registrationProgress.setProgress(25);
+        voterID.setText("");
+
         // Hide the status bar.
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -114,7 +141,10 @@ public class ReadQRActivity extends AppCompatActivity {
                 Log.d("MainActivity", "Scanned");
                 //Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 Intent lockIntent = new Intent(this, GenerateQRActivity.class);
+                lockIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 lockIntent.putExtra("ScannedQRCodeBlindedTokenString", result.getContents());
+                lockIntent.putExtra("savedQRCode", false);
+                lockIntent.putExtra("voterID", i_voterID);
                 startActivity(lockIntent);
             }
         } else {
@@ -123,57 +153,160 @@ public class ReadQRActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
+
     private boolean registerVoter(){
 
-        String govID = "";
-        if(editText != null) {
-            govID = editText.getText().toString();
+        String govID = null;
+        if(voterID != null){
+            govID = voterID.getText().toString();
         }
-        EditTextValue = govID;
 
-        Log.d("LOG INFO", "GOV ID: " + govID );
+        if (govID == null || govID.equals("") )
+        {
+            new AlertDialog.Builder(this)
+                    .setMessage("Please enter the voter ID")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            continueButton.setVisibility(View.VISIBLE);
+                            backButton.setVisibility(View.VISIBLE);
+                            voterIDEditText.setVisibility(View.VISIBLE);
+                            verifyVoterProgressBar.setVisibility(View.GONE);
+                        }
+                    })
+                    .show();
+            return false;
+        }
+
+        List<SavedQRCode> savedQRcodeList;
+        dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
+
+        Gson gson = new Gson();
+
+        String json = dataStore.getString("SavedQRCodeList", "");
+        if(json==null){
+            Log.e("ERROR", "ERROR json is null");
+        }
+
+        Type type = new TypeToken<List<SavedQRCode>>(){}.getType();
+        savedQRcodeList = gson.fromJson(json, type);
+
+        if (savedQRcodeList != null) {
+            for (SavedQRCode QRcode : savedQRcodeList) {
+                if (QRcode.voterID.equals(govID)) {
+                    new AlertDialog.Builder(this)
+                            .setMessage("Duplicate voter ID found in registrar app.")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    continueButton.setVisibility(View.VISIBLE);
+                                    backButton.setVisibility(View.VISIBLE);
+                                    voterIDEditText.setVisibility(View.VISIBLE);
+                                    verifyVoterProgressBar.setVisibility(View.GONE);
+                                }
+                            })
+                            .show();
+                    return false;
+                }
+            }
+        }
+
 
         BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
         BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
-        Call<RegisterVoterModel> call = apiService.registerVoter("US", govID, "david");
 
-        call.enqueue(new Callback<RegisterVoterModel>() {
+        Call<VoterRegRecordModel> call = apiService.voterRegRecord("US", govID);
+
+
+        call.enqueue(new Callback<VoterRegRecordModel>() {
             @Override
-            public void onResponse(Call<RegisterVoterModel> call, Response<RegisterVoterModel> response) {
+            public void onResponse(Call<VoterRegRecordModel> call, Response<VoterRegRecordModel> response) {
                 int statusCode = response.code();
 
-                if(response.body().getResponse() != null) {
-                    String serverResponse = response.body().getResponse().getResult();
+                continueButton.setVisibility(View.VISIBLE);
+                backButton.setVisibility(View.VISIBLE);
+                voterIDEditText.setVisibility(View.VISIBLE);
+                verifyVoterProgressBar.setVisibility(View.GONE);
 
-                    Log.d("LOG INFO", "Registered voter... Result: " + serverResponse);
-                    Toast.makeText(getApplicationContext(), "Registered Voter", Toast.LENGTH_SHORT).show();
-                    integrator.initiateScan();
+                //Unable to get a response from the server
+                if(response.body() == null){
+                    new AlertDialog.Builder(ReadQRActivity.this)
+                            .setMessage("Error communicating with Server. Voter registration not completed.\nPlease contact BlockVote administrators.")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            })
+                            .show();
+
+                    return;
+                }
+
+                if(response.body().getResponse() != null) {
+
+                    serverResponse = response.body().getResponse();
+
+                    new AlertDialog.Builder(ReadQRActivity.this)
+                            .setMessage("WARNING:\nVoter has already registered.\nPreventing Registration.")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            })
+                            .show();
+
+                    return;
                 }
                 else
                 {
-                    Log.e("ERROR", "registering voter failed...");
-                    Toast.makeText(getApplicationContext(), "Already registered", Toast.LENGTH_SHORT).show();
-                    //TODO: fail because already registered
+                    serverResponse = response.body().getError().getMessage();
+
+                    //TODO: very poor way of checking, just a temp quick solution,
+                    if (serverResponse.toLowerCase().contains("voter with govID".toLowerCase()))
+                    {
+                        integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+                        integrator.setPrompt("Scan");
+                        integrator.setCameraId(0);
+                        integrator.setBeepEnabled(false);
+                        integrator.setBarcodeImageEnabled(false);
+                        integrator.initiateScan();
+                    }
+                    else
+                    {
+
+                        new AlertDialog.Builder(ReadQRActivity.this)
+                                .setMessage("Please try again...")
+                                .setCancelable(false)
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                    }
+                                })
+                                .show();
+                    }
+
+                    return;
                 }
+
+
 
             }
 
             @Override
-            public void onFailure(Call<RegisterVoterModel> call, Throwable t) {
-                Log.e("ERROR", "ERROR");
-                Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
-                //throw new RuntimeException("Could not register voter");
+            public void onFailure(Call<VoterRegRecordModel> call, Throwable t) {
+                Log.e("ERROR", "ERROR on VoterRegRecordModel");
 
+                Toast.makeText(getApplicationContext(), "Error on VoterRegRecordModel", Toast.LENGTH_SHORT).show();
             }
         });
 
 
-        return false;
-    }
-
-    private void startQRCodeRead()
-    {
-        integrator.initiateScan();
+        i_voterID = Integer.parseInt(govID);
+        Log.d("LOG INFO", "GOV ID: " + govID );
+        return true;
     }
 
 }
