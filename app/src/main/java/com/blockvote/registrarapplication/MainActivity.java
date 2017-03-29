@@ -31,6 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.TabHost;
 import android.widget.Toast;
 
+import com.blockvote.registrarapplication.crypto.Registrar;
 import com.blockvote.registrarapplication.qrCode.GenerateQRActivity;
 import com.blockvote.registrarapplication.qrCode.ReadQRActivity;
 import com.github.lzyzsd.circleprogress.ArcProgress;
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private Intent loginIntent;
     private Intent readQRIntent;
     private Intent viewQRIntent;
+    private Registrar registrar;
+    private String savedRegisteredVoters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.Main_Option_ClearAllVoterData:
                 dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
                 editor = dataStore.edit();
-                editor.clear();
+                editor.remove(savedRegisteredVoters);
                 editor.commit();
 
                 this.onResume();
@@ -179,15 +182,29 @@ public class MainActivity extends AppCompatActivity {
         //TODO check if login credentials are still valid, if not, start login activity
 
 
+        dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = dataStore.getString("registrar", "");
+        if (json == null) {
+            Log.e("ERROR", "ERROR json is null");
+        }
+        registrar = gson.fromJson(json, Registrar.class);
+
+        if (registrar != null) {
+            savedRegisteredVoters = registrar.name + "_SavedQRCodeList";
+        }
+
+
         //Incomplete list
         dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
         SharedPreferences.Editor editor = dataStore.edit();
 
-        Gson gson = new Gson();
+        gson = new Gson();
 
-        String json = dataStore.getString("SavedQRCodeList", "");
+        //json = dataStore.getString("SavedQRCodeList", "");
+        json = dataStore.getString(savedRegisteredVoters, "");
         if(json==null){
-            Log.e("ERROR", "ERROR json is null");
+            Log.e("ERROR", "============================ERROR json is null===============================");
         }
 
         Type type = new TypeToken<List<SavedQRCode>>(){}.getType();

@@ -70,10 +70,11 @@ public class GenerateQRActivity extends AppCompatActivity {
     private boolean registrationCompleted;
     private int voterID;
     List<SavedQRCode> savedQRcodeList;
-    private Registrar registrar;
     private String authorization;
     private boolean generatingQRcode;
     ProgressBar progressRegisterVoter;
+    private Registrar registrar;
+    private String savedRegisteredVoters;
 
     GenerateQRActivity generateQRActivity;
 
@@ -421,12 +422,26 @@ public class GenerateQRActivity extends AppCompatActivity {
 
 
     private void saveQRCode(boolean registrationCompleted){
+
+
+
+
+        dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = dataStore.getString("registrar", "");
+        if (json == null) {
+            Log.e("ERROR", "ERROR json is null");
+        }
+        registrar = gson.fromJson(json, Registrar.class);
+        savedRegisteredVoters = registrar.name + "_SavedQRCodeList";
+
+
         dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
         SharedPreferences.Editor editor = dataStore.edit();
 
-        Gson gson = new Gson();
+        gson = new Gson();
 
-        String json = dataStore.getString("SavedQRCodeList", "");
+        json = dataStore.getString(savedRegisteredVoters, "");
         if(json==null){
             Log.e("ERROR", "ERROR json is null");
         }
@@ -475,7 +490,7 @@ public class GenerateQRActivity extends AppCompatActivity {
         json = gson.toJson(savedQRcodeList);
 
 
-        editor.putString("SavedQRCodeList", json);
+        editor.putString(savedRegisteredVoters, json);
         editor.commit();
     }
 
@@ -621,7 +636,7 @@ public class GenerateQRActivity extends AppCompatActivity {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            //Log.v(LOG_TAG, "Progress Update" + values[0]);
+            Log.v(LOG_TAG, "Progress Update" + values[0]);
             pb.setProgress(values[0]);
         }
 

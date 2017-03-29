@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.blockvote.registrarapplication.MainActivity;
 import com.blockvote.registrarapplication.R;
 import com.blockvote.registrarapplication.SavedQRCode;
+import com.blockvote.registrarapplication.crypto.Registrar;
 import com.blockvote.registrarapplication.model.VoterRegRecordModel;
 import com.blockvote.registrarapplication.network.BlockVoteServerAPI;
 import com.blockvote.registrarapplication.network.BlockVoteServerInstance;
@@ -47,6 +48,8 @@ public class ReadQRActivity extends AppCompatActivity {
     Button backButton;
     ProgressBar verifyVoterProgressBar;
     EditText voterIDEditText;
+    private Registrar registrar;
+    private String savedRegisteredVoters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,12 +185,21 @@ public class ReadQRActivity extends AppCompatActivity {
             return false;
         }
 
+        dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = dataStore.getString("registrar", "");
+        if (json == null) {
+            Log.e("ERROR", "ERROR json is null");
+        }
+        registrar = gson.fromJson(json, Registrar.class);
+        savedRegisteredVoters = registrar.name + "_SavedQRCodeList";
+
         List<SavedQRCode> savedQRcodeList;
         dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
 
-        Gson gson = new Gson();
+        gson = new Gson();
 
-        String json = dataStore.getString("SavedQRCodeList", "");
+        json = dataStore.getString(savedRegisteredVoters, "");
         if(json==null){
             Log.e("ERROR", "ERROR json is null");
         }
