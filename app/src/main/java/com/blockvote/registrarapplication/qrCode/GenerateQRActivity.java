@@ -363,7 +363,20 @@ public class GenerateQRActivity extends AppCompatActivity {
                     Log.e("ERROR", "Error reading QR code or signing token");
 
                     //TODO testing saving QR codes without server - delete after and replace with error handling (eg an alert dialog)
-                    signedToken = blindedTokenString;
+                    //signedToken = blindedTokenString;
+
+                    new AlertDialog.Builder(GenerateQRActivity.this)
+                            .setMessage("Invalid QR code, please retry voter registration")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    startActivity(mainMenu);
+                                }
+                            })
+                            .show();
+
+                    return;
+
                 }
             } else {
 
