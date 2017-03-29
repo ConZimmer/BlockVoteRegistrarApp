@@ -290,10 +290,22 @@ public class GenerateQRActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<RegisterVoterModel> call, Throwable t) {
-                            Log.e("ERROR", "ERROR");
-                            Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
-                            //throw new RuntimeException("Could not register voter");
+                            Log.e("ERROR", "ERROR on RegisterVoterModel call");
 
+                            buttonSaveQR.setVisibility(View.VISIBLE);
+                            buttonContinue.setVisibility(View.VISIBLE);
+                            progressRegisterVoter.setVisibility(View.GONE);
+
+                            new AlertDialog.Builder(GenerateQRActivity.this)
+                                    .setMessage("Voter registration not complete.\n Please try again...")
+                                    .setCancelable(false)
+                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            saveQRCode(false);
+                                            startActivity(mainMenu);
+                                        }
+                                    })
+                                    .show();
                         }
                     });
 

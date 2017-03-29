@@ -306,7 +306,21 @@ public class ReadQRActivity extends AppCompatActivity {
             public void onFailure(Call<VoterRegRecordModel> call, Throwable t) {
                 Log.e("ERROR", "ERROR on VoterRegRecordModel");
 
-                Toast.makeText(getApplicationContext(), "Error on VoterRegRecordModel", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Error on VoterRegRecordModel", Toast.LENGTH_SHORT).show();
+
+                new AlertDialog.Builder(ReadQRActivity.this)
+                        .setMessage("Voter registration not complete.\n Please try again...")
+                        .setCancelable(false)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                continueButton.setVisibility(View.VISIBLE);
+                                backButton.setVisibility(View.VISIBLE);
+                                voterIDEditText.setVisibility(View.VISIBLE);
+                                verifyVoterProgressBar.setVisibility(View.GONE);
+                                startActivity(mainMenu);
+                            }
+                        })
+                        .show();
             }
         });
 
