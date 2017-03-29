@@ -465,6 +465,10 @@ public class GenerateQRActivity extends AppCompatActivity {
                     })
                     .show();
         }
+        else
+        {
+            startActivity(mainMenu);
+        }
 
     }
 
