@@ -442,36 +442,35 @@ public class GenerateQRActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        new AlertDialog.Builder(GenerateQRActivity.this)
-                .setMessage("If you save, voter registration will NOT be completed!\nOnly save if voter has NOT scanned QR code.")
-                .setCancelable(false)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+        if (!registrationCompleted) {
+            new AlertDialog.Builder(GenerateQRActivity.this)
+                    .setMessage("If you save, voter registration will NOT be completed!\nOnly save if voter has NOT scanned QR code.")
+                    .setCancelable(false)
+                    .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
 
-                        //TODO save QR code
-                        saveQRCode(false);
+                            //TODO save QR code
+                            saveQRCode(false);
 
-                        startActivity(mainMenu);
-                    }
-                })
-                .setNegativeButton("Go Back", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Hide the status bar.
-                        View decorView = getWindow().getDecorView();
-                        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-                        decorView.setSystemUiVisibility(uiOptions);
-                    }
-                })
-                .show();
+                            startActivity(mainMenu);
+                        }
+                    })
+                    .setNegativeButton("Go Back", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Hide the status bar.
+                            View decorView = getWindow().getDecorView();
+                            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+                            decorView.setSystemUiVisibility(uiOptions);
+                        }
+                    })
+                    .show();
+        }
 
     }
 
 
 
     private void saveQRCode(boolean registrationCompleted){
-
-
-
 
         dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
         Gson gson = new Gson();
@@ -542,12 +541,22 @@ public class GenerateQRActivity extends AppCompatActivity {
     }
 
     private String getVoterQRCode(int voter){
+
+        dataStore = getSharedPreferences("RegistrarData", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = dataStore.getString("registrar", "");
+        if (json == null) {
+            Log.e("ERROR", "ERROR json is null");
+        }
+        registrar = gson.fromJson(json, Registrar.class);
+        savedRegisteredVoters = registrar.name + "_SavedQRCodeList";
+
         dataStore = getSharedPreferences("SavedData", MODE_PRIVATE);
         SharedPreferences.Editor editor = dataStore.edit();
 
-        Gson gson = new Gson();
+        gson = new Gson();
 
-        String json = dataStore.getString("SavedQRCodeList", "");
+        json = dataStore.getString(savedRegisteredVoters, "");
         if(json==null){
             Log.e("ERROR", "ERROR json is null");
         }
