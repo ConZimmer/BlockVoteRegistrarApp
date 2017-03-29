@@ -156,11 +156,6 @@ public class ReadQRActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-
-    }
-
     private boolean registerVoter(){
 
         String govID = null;

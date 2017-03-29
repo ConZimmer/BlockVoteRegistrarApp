@@ -417,6 +417,28 @@ public class GenerateQRActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        new AlertDialog.Builder(GenerateQRActivity.this)
+                .setMessage("If you save, voter registration will NOT be completed!\nOnly save if voter has NOT scanned QR code.")
+                .setCancelable(false)
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        //TODO save QR code
+                        saveQRCode(false);
+
+                        startActivity(mainMenu);
+                    }
+                })
+                .setNegativeButton("Go Back", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Hide the status bar.
+                        View decorView = getWindow().getDecorView();
+                        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+                        decorView.setSystemUiVisibility(uiOptions);
+                    }
+                })
+                .show();
+
     }
 
 

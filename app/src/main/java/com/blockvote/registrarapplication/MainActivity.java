@@ -1,10 +1,13 @@
 package com.blockvote.registrarapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -73,7 +76,22 @@ public class MainActivity extends AppCompatActivity {
         loginIntent = new Intent(this, LoginActivity.class);
         loginIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
-        startActivity(loginIntent);
+
+        if (isNetworkAvailable()) {
+            startActivity(loginIntent);
+        }
+        else
+        {
+            new AlertDialog.Builder(MainActivity.this)
+                    .setMessage("No internet connection.\nPlease connect to internet and reopen app.")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            MainActivity.this.finish();
+                        }
+                    })
+                    .show();
+        }
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(myToolbar);
@@ -323,6 +341,13 @@ public class MainActivity extends AppCompatActivity {
                 overflow.setColorFilter(color);
             }
         });
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 }
