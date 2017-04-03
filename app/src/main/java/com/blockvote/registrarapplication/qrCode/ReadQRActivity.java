@@ -223,7 +223,7 @@ public class ReadQRActivity extends AppCompatActivity {
         }
 
 
-        BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
+        BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance(registrar.serverURL);
         BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
 
         Call<VoterRegRecordModel> call = apiService.voterRegRecord("US", govID);

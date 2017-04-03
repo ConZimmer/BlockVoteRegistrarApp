@@ -33,7 +33,7 @@ public class ElectionSelectionActivity extends AppCompatActivity {
             }
 
            // NetworkInterface networkingInterface = NetworkInterface.retrofit.create(NetworkInterface.class);
-            BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
+            BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance("");
             BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
             Call<ElectionListModel> call = apiService.getElectionList();
 

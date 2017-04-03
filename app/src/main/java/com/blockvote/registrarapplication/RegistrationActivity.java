@@ -57,7 +57,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 reg="no";
             }
 
-            BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
+            BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance("");
             BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
 
             AuthorizeRequest authorizeRequest= new AuthorizeRequest(username, voter, reg);

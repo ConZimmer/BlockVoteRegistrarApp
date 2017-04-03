@@ -24,12 +24,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class BlockVoteServerInstance {
-    private final String BASE_URL = "https://blockvotenode2.mybluemix.net/";
+    //private final String BASE_URL = "https://blockvotenode2.mybluemix.net/";
     private BlockVoteServerAPI apiService;
 
-    public BlockVoteServerInstance(){
+    public BlockVoteServerInstance(String server_url){
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(server_url)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(BlockVoteServerAPI.class);

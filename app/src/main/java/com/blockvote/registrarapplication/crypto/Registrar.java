@@ -15,11 +15,13 @@ public class Registrar implements IRegistrar{
 	private final RSAKeyParameters publicKey;
 	private final RSAKeyParameters privateKey;
 	public final String name;
+	public final String serverURL;
 
-	public Registrar(BigInteger publicModulus, BigInteger publicExponent, BigInteger privateModulus, BigInteger privateExponent, String registrarName) {
+	public Registrar(BigInteger publicModulus, BigInteger publicExponent, BigInteger privateModulus, BigInteger privateExponent, String registrarName, String serverURL) {
 		publicKey = new RSAKeyParameters(false, publicModulus, publicExponent);
 		privateKey = new RSAKeyParameters(true, privateModulus, privateExponent);
 		name = registrarName;
+		this.serverURL = serverURL;
 	}
 
 	public RSAKeyParameters getPublic() {

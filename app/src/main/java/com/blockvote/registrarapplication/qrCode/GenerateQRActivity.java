@@ -168,7 +168,7 @@ public class GenerateQRActivity extends AppCompatActivity {
                     buttonContinue.setVisibility(View.GONE);
                     progressRegisterVoter.setVisibility(View.VISIBLE);
 
-                    BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance();
+                    BlockVoteServerInstance blockVoteServerInstance = new BlockVoteServerInstance(registrar.serverURL);
                     BlockVoteServerAPI apiService = blockVoteServerInstance.getAPI();
 
                     Call<RegisterVoterModel> call = apiService.registerVoter("US", Integer.toString(voterID), registrar.name, authorization);
